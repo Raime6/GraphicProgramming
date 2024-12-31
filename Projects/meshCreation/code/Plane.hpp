@@ -46,7 +46,6 @@ namespace meshCreation
 			~Plane();
 
 			 void render();
-			 void buildPlane();
 	};
 }
 
