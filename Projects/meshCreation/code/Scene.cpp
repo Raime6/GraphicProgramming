@@ -2,14 +2,14 @@
 // Public Domain Code
 // Author: Xavier Canals
 
+#include "Scene.hpp"
+
+
+
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <iostream>
-
-
-
-#include "Scene.hpp"
 
 
 

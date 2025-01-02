@@ -2,13 +2,13 @@
 // Public Domain Code
 // Author: Xavier Canals
 
+#include "Window.hpp"
+
+
+
 #include <cassert>
 #include <glad/glad.h>
 #include <SDL_opengl.h>
-
-
-
-#include "Window.hpp"
 
 
 

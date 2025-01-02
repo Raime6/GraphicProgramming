@@ -11,15 +11,15 @@
 
 
 
-using meshCreation::Scene;
-using meshCreation::Window;
+using finalPractice::Scene;
+using finalPractice::Window;
 
 
 
 int main(int, char* [])
 {
-	constexpr unsigned  viewportWidth = 1024;
-	constexpr unsigned  viewportHeight = 576;
+	constexpr unsigned  viewportWidth  = 1024;
+	constexpr unsigned  viewportHeight =  576;
 
 
 
@@ -29,15 +29,55 @@ int main(int, char* [])
 
 
 
-	bool exit = false;
+	int  mouseX     = 0;
+	int  mouseY     = 0;
+	bool buttonDown = false;
+	bool exit       = false;
+
 	do
 	{
 		SDL_Event event;
 
 		while (SDL_PollEvent(&event) > 0)
 		{
-			if (event.type == SDL_QUIT)
-				exit = true;
+			switch (event.type)
+			{
+				case SDL_MOUSEBUTTONDOWN:
+				{
+					auto buttons  = SDL_GetMouseState(&mouseX, &mouseY);
+					auto leftDown = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+
+					if (leftDown && not buttonDown)
+						scene.onClick(mouseX, mouseY, buttonDown = true);
+
+					break;
+				}
+
+				case SDL_MOUSEBUTTONUP:
+				{
+					auto buttons  = SDL_GetMouseState(&mouseX, &mouseY);
+					auto leftDown = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
+
+					if (not leftDown && buttonDown)
+						scene.onClick(mouseX, mouseY, buttonDown = false);
+
+					break;
+				}
+
+				case SDL_MOUSEMOTION:
+				{
+					SDL_GetMouseState(&mouseX, &mouseY);
+
+					scene.onDrag(mouseX, mouseY);
+
+					break;
+				}
+
+				case SDL_QUIT:
+				{
+					exit = true;
+				}
+			}
 		}
 
 		scene.update();

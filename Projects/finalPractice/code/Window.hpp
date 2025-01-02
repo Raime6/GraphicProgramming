@@ -11,7 +11,7 @@
 
 
 
-namespace meshCreation
+namespace finalPractice
 {
 	class Window
 	{

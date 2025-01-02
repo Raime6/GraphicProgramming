@@ -104,13 +104,13 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../../libraries/glad/lib/windows/visual-studio-2022/static-x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2-staticd.lib;SDL2maind.lib;gladd.lib;imm32.lib;setupapi.lib;version.lib;winmm.lib;opengl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../../libraries/glad/lib/windows/visual-studio-2022/static-x64;../../../libraries/soil2/lib/windows/visual-studio-2019/static-x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2-staticd.lib;SDL2maind.lib;gladd.lib;soil2-debug.lib;imm32.lib;setupapi.lib;version.lib;winmm.lib;opengl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -121,24 +121,31 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../../libraries/glad/lib/windows/visual-studio-2022/static-x64</AdditionalLibraryDirectories>
-      <AdditionalDependencies>SDL2-static.lib;SDL2main.lib;glad.lib;imm32.lib;setupapi.lib;version.lib;winmm.lib;opengl32.lib</AdditionalDependencies>
+      <AdditionalLibraryDirectories>../../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../../libraries/glad/lib/windows/visual-studio-2022/static-x64;../../../libraries/soil2/lib/windows/visual-studio-2019/static-x64</AdditionalLibraryDirectories>
+      <AdditionalDependencies>SDL2-static.lib;SDL2main.lib;glad.lib;soil2.lib;imm32.lib;setupapi.lib;version.lib;winmm.lib;opengl32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\code\Camera.hpp" />
+    <ClInclude Include="..\..\code\Color.hpp" />
+    <ClInclude Include="..\..\code\ColorBuffer.hpp" />
     <ClInclude Include="..\..\code\Scene.hpp" />
+    <ClInclude Include="..\..\code\Skybox.hpp" />
+    <ClInclude Include="..\..\code\SkyboxTexture.hpp" />
     <ClInclude Include="..\..\code\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\code\main.cpp" />
     <ClCompile Include="..\..\code\Scene.cpp" />
+    <ClCompile Include="..\..\code\Skybox.cpp" />
+    <ClCompile Include="..\..\code\SkyboxTexture.cpp" />
     <ClCompile Include="..\..\code\Window.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

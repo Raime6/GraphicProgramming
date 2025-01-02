@@ -6,40 +6,52 @@
 
 
 
-#include <glad/glad.h>
-#include <string>
+#ifndef SCENE_HEADER
+#define SCENE_HEADER
 
 
 
-namespace meshCreation
+#include "Camera.hpp"
+#include "Skybox.hpp"
+
+
+
+namespace finalPractice
 {
-	using namespace std;
-
 	class Scene
 	{
-	private:
+		private:
 
-		static const string   vertexShaderCode;
-		static const string fragmentShaderCode;
+			Camera		 camera;
+			Skybox		 skybox;
 
-		GLint  modelViewMatrixID;
-		GLint projectionMatrixID;
+			int		   	  width;
+			int          height;
 
-		float    angle;
+			float  angleAroundX;
+			float  angleAroundY;
+			float   angleDeltaX;
+			float   angleDeltaY;
 
-	public:
+			bool pointerPressed;
+			int	   lastPointerX;
+			int    lastPointerY;
 
-		Scene(unsigned width, unsigned height);
+		public:
 
-		void update();
-		void render();
-		void resize(unsigned width, unsigned height);
+			Scene(int width, int height);
 
-	private:
+			void update();
+			void render();
 
-		GLuint compileShaders();
-		void   showCompilationError(GLuint  shaderID);
-		void   showLinkageError(GLuint programID);
+		public:
 
+			void resize (int width, int height);
+			void onDrag (int pointerX, int pointerY);
+			void onClick(int pointerX, int pointerY, bool down);
 	};
 }
+
+
+
+#endif
