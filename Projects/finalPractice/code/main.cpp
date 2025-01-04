@@ -23,7 +23,15 @@ int main(int, char* [])
 
 
 
-	Window window("Final Practice", SDL_WINDOWPOS_CENTERED, SDL_WINDOWPOS_CENTERED, viewportWidth, viewportHeight, { 3, 3 });
+	Window window
+	(
+		"Final Practice"      ,
+		SDL_WINDOWPOS_CENTERED,
+		SDL_WINDOWPOS_CENTERED,
+		viewportWidth         ,
+		viewportHeight        ,
+		{ 3, 3 }
+	);
 
 	Scene scene(viewportWidth, viewportHeight);
 

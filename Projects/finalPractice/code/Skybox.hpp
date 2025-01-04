@@ -12,7 +12,7 @@
 
 
 #include "Camera.hpp"
-#include "SkyboxTexture.hpp"
+#include "Texture.hpp"
 
 
 
@@ -28,29 +28,23 @@ namespace finalPractice
 
 		private:
 
-			GLuint		  vboID;
-			GLuint		  vaoID;
-			GLuint		  shaderProgramID;
+			GLuint		               vboID;
+			GLuint		               vaoID;
+			GLuint		     shaderProgramID;
 
-			GLint		  modelViewMatrixID;
+			GLint		   modelViewMatrixID;
 			GLint		  projectionMatrixID;
 
-			SkyboxTexture skyboxTexture;
+			Texture                  texture;
 
 		public:
 
-			Skybox(const std::string & textureBasePath);
-			~Skybox();
+			Skybox(const std::string & texturePath);
+		   ~Skybox();
 
 		public:
 
 			void render(const Camera & camera);
-
-		private:
-
-			GLuint compileShaders();
-			void   showCompilationError(GLuint  shaderID);
-			void   showLinkageError(GLuint programID);
 	};
 }
 

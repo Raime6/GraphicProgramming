@@ -9,6 +9,7 @@
 #include <cassert>
 #include <gtc/type_ptr.hpp>
 #include <iostream>
+#include <Shader.hpp>
 
 
 
@@ -87,11 +88,12 @@ namespace finalPractice
 
 
 
-	Skybox::Skybox(const std::string & textureBasePath) : skyboxTexture(textureBasePath)
+	Skybox::Skybox(const std::string & texturePath)
 	{
-		assert(skyboxTexture.isOk());
+		texture.setID(texture.createTextureCubeMap< Rgba8888 >(texturePath));
+		assert(texture.isOk());
 
-		shaderProgramID    = compileShaders();
+		shaderProgramID    = compileShaders(vertexShaderCode, fragmentShaderCode);
 
 		modelViewMatrixID  = glGetUniformLocation(shaderProgramID, "model_view_matrix");
 		projectionMatrixID = glGetUniformLocation(shaderProgramID, "projection_matrix");
@@ -114,6 +116,8 @@ namespace finalPractice
 	{
 		glDeleteVertexArrays(1, &vaoID);
 		glDeleteBuffers		(1, &vboID);
+
+		glDeleteProgram(shaderProgramID);
 	}
 
 
@@ -122,7 +126,9 @@ namespace finalPractice
 	{
 		glUseProgram(shaderProgramID);
 
-		skyboxTexture.bind();
+		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+		texture.bind();
 
 		const glm::mat4   modelViewMatrix  = camera.getTransformMatrixInverse();
 		const glm::mat4 & projectionMatrix = camera.getProjectionMatrix();
@@ -139,80 +145,5 @@ namespace finalPractice
 
 		glBindVertexArray (0);
 		glUseProgram      (0);
-	}
-
-
-
-	GLuint Skybox::compileShaders()
-	{
-		GLint succeeded = GL_FALSE;
-
-		GLuint   vertexShaderId = glCreateShader(  GL_VERTEX_SHADER);
-		GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-
-		const char *   vertexShadersCode[] = {          vertexShaderCode.c_str() };
-		const char * fragmentShadersCode[] = {		  fragmentShaderCode.c_str() };
-		const GLint    vertexShadersSize[] = { (GLint)  vertexShaderCode.size () };
-		const GLint  fragmentShadersSize[] = { (GLint)fragmentShaderCode.size () };
-
-		glShaderSource(  vertexShaderId, 1,   vertexShadersCode,   vertexShadersSize);
-		glShaderSource(fragmentShaderId, 1, fragmentShadersCode, fragmentShadersSize);
-
-		glCompileShader(  vertexShaderId);
-		glCompileShader(fragmentShaderId);
-
-		glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &succeeded);
-		if (!succeeded)
-			showCompilationError(vertexShaderId);
-
-		glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &succeeded);
-		if (!succeeded)
-			showCompilationError(fragmentShaderId);
-
-		GLuint programID = glCreateProgram();
-
-		glAttachShader(programID, vertexShaderId);
-		glAttachShader(programID, fragmentShaderId);
-
-		glLinkProgram(programID);
-
-		glGetShaderiv(programID, GL_LINK_STATUS, &succeeded);
-		if (not succeeded)
-			showLinkageError(programID);
-
-		glDeleteShader(  vertexShaderId);
-		glDeleteShader(fragmentShaderId);
-
-		return programID;
-	}
-
-	void Skybox::showCompilationError(GLuint shaderID)
-	{
-		std::string       infoLog;
-		GLint       infoLogLenght;
-
-		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLenght);
-
-		infoLog.resize(infoLogLenght);
-
-		glGetShaderInfoLog(shaderID, infoLogLenght, NULL, &infoLog.front());
-
-		std::cerr << infoLog.c_str() << std::endl;
-		assert(false);
-	}
-
-	void Skybox::showLinkageError(GLuint programID)
-	{
-		std::string       infoLog;
-		GLint       infoLogLenght;
-
-		glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLenght);
-
-		infoLog.resize(infoLogLenght);
-
-		glGetProgramInfoLog(programID, infoLogLenght, NULL, &infoLog.front());
-
-		std::cerr << infoLog.c_str() << std::endl;
-		assert(false);
 	}
 }

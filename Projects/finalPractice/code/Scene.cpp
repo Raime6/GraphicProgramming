@@ -8,10 +8,12 @@
 
 namespace finalPractice
 {
-	Scene::Scene(int width, int height) : skybox("../../../shared/assets/skybox ")
+	Scene::Scene(int width, int height) :
+		terrain(10.f, 10.f, 50, 50, "../../../shared/assets/height-map.png"),
+		skybox("../../../shared/assets/skybox ")
 	{
 		glEnable (GL_CULL_FACE);
-		glDisable(GL_DEPTH_TEST);
+		glEnable(GL_DEPTH_TEST);
 
 		resize(width, height);
 
@@ -39,13 +41,16 @@ namespace finalPractice
 
 		camera.setTarget(0, 0, -1);
 		camera.rotate   (cameraRotation);
+
+		terrain.increaseAngle(.005f);
 	}
 
 	void Scene::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		skybox.render(camera);
+		terrain.render(camera);
+		skybox .render(camera);
 	}
 
 
@@ -56,6 +61,8 @@ namespace finalPractice
 		height = newHeight;
 
 		camera.setRatio(float(width) / float(height));
+
+		terrain.resize(newWidth, newHeight);
 
 		glViewport(0, 0, width, height);
 	}
