@@ -33,6 +33,12 @@
     <ClCompile Include="..\..\code\Cylinder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\code\Shader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\code\MeshForm.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\Window.hpp">
@@ -48,6 +54,12 @@
       <Filter>Header FIles</Filter>
     </ClInclude>
     <ClInclude Include="..\..\code\Cylinder.hpp">
+      <Filter>Header FIles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\Shader.hpp">
+      <Filter>Header FIles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\code\MeshForm.hpp">
       <Filter>Header FIles</Filter>
     </ClInclude>
   </ItemGroup>

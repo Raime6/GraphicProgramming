@@ -3,6 +3,7 @@
 // Author: Xavier Canals
 
 #include "Scene.hpp"
+#include "Shader.hpp"
 
 
 
@@ -53,7 +54,7 @@ namespace meshCreation
 		glEnable         (GL_DEPTH_TEST);
 		glClearColor(.2f, .2f, .2f, .1f);
 
-		GLuint programID = compileShaders();
+		GLuint programID = compileShaders(vertexShaderCode, fragmentShaderCode);
 
 		glUseProgram(programID);
 
@@ -93,80 +94,5 @@ namespace meshCreation
 		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
 		glViewport(0, 0, width, height);
-	}
-
-
-
-	GLuint Scene::compileShaders()
-	{
-		GLint succeeded = GL_FALSE;
-
-		GLuint   vertexShaderId = glCreateShader(  GL_VERTEX_SHADER);
-		GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
-
-		const char *   vertexShadersCode[] = {         vertexShaderCode.c_str() };
-		const char * fragmentShadersCode[] = {       fragmentShaderCode.c_str() };
-		const GLint    vertexShadersSize[] = { (GLint)  vertexShaderCode.size() };
-		const GLint  fragmentShadersSize[] = { (GLint)fragmentShaderCode.size() };
-
-		glShaderSource(  vertexShaderId, 1,   vertexShadersCode, vertexShadersSize);
-		glShaderSource(fragmentShaderId, 1, fragmentShadersCode, fragmentShadersSize);
-
-		glCompileShader(  vertexShaderId);
-		glCompileShader(fragmentShaderId);
-
-		glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &succeeded);
-		if (!succeeded)
-			showCompilationError(vertexShaderId);
-
-		glGetShaderiv(fragmentShaderId, GL_COMPILE_STATUS, &succeeded);
-		if (!succeeded)
-			showCompilationError(fragmentShaderId);
-
-		GLuint programID = glCreateProgram();
-
-		glAttachShader(programID,   vertexShaderId);
-		glAttachShader(programID, fragmentShaderId);
-
-		glLinkProgram(programID);
-
-		glGetShaderiv(programID, GL_LINK_STATUS, &succeeded);
-		if (not succeeded)
-			showLinkageError(programID);
-
-		glDeleteShader(  vertexShaderId);
-		glDeleteShader(fragmentShaderId);
-
-		return programID;
-	}
-
-	void Scene::showCompilationError(GLuint shaderID)
-	{
-		string      infoLog;
-		GLint infoLogLenght;
-
-		glGetShaderiv(shaderID, GL_INFO_LOG_LENGTH, &infoLogLenght);
-
-		infoLog.resize(infoLogLenght);
-
-		glGetShaderInfoLog(shaderID, infoLogLenght, NULL, &infoLog.front());
-
-		cerr << infoLog.c_str() << endl;
-		assert(false);
-	}
-
-	void Scene::showLinkageError(GLuint programID)
-	{
-		string infoLog;
-		GLint  infoLogLenght;
-
-		glGetProgramiv(programID, GL_INFO_LOG_LENGTH, &infoLogLenght);
-
-		infoLog.resize(infoLogLenght);
-
-		glGetProgramInfoLog(programID, infoLogLenght, NULL, &infoLog.front());
-
-		cerr << infoLog.c_str() << endl;
-		assert(false);
 	}
 }

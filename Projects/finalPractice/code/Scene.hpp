@@ -12,6 +12,7 @@
 
 
 #include "Camera.hpp"
+#include "MeshLoader.hpp"
 #include "Skybox.hpp"
 #include "Terrain.hpp"
 
@@ -23,21 +24,22 @@ namespace finalPractice
 	{
 		private:
 
-			Camera		  camera;
-			Skybox		  skybox;
-			Terrain      terrain;
+			Camera		   camera;
+			MeshLoader meshLoader;
+			Skybox		   skybox;
+			Terrain       terrain;
 
-			int		   	   width;
-			int           height;
+			int		   	    width;
+			int            height;
 
-			float   angleAroundX;
-			float   angleAroundY;
-			float    angleDeltaX;
-			float    angleDeltaY;
+			float    angleAroundX;
+			float    angleAroundY;
+			float     angleDeltaX;
+			float     angleDeltaY;
 
-			bool  pointerPressed;
-			int	    lastPointerX;
-			int     lastPointerY;
+			bool   pointerPressed;
+			int	     lastPointerX;
+			int      lastPointerY;
 
 		public:
 

@@ -6,46 +6,26 @@
 
 
 
-#include <glad/glad.h>
-
-
-
 #ifndef CYLINDER_HEADER
 #define CYLINDER_HEADER
 
 
 
+#include "MeshForm.hpp"
+
+
+
 namespace meshCreation
 {
-	class Cylinder
+	class Cylinder : public MeshForm
 	{
-		private:
-
-			enum
-			{
-				VBO_COORDINATES,
-				VBO_COLORS,
-				EBO_INDEX,
-				VBO_COUNT
-			};
-
-
-
-			static const GLfloat coordinates[];
-			static const GLfloat colors[];
-			static const GLubyte index[];
-
-		private:
-
-			GLuint vboIDs[VBO_COUNT];
-			GLuint vaoID;
-
 		public:
 
-			Cylinder();
-			~Cylinder();
+			Cylinder(float height, float radius, unsigned numBaseVertex);
 
-			void render();
+		private:
+
+			void buildCylinder(float height, float radius, unsigned numBaseVertex);
 	};
 }
 

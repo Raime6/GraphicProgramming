@@ -9,6 +9,7 @@
 namespace finalPractice
 {
 	Scene::Scene(int width, int height) :
+		meshLoader("../../../shared/assets/stanford-bunny.obj")             ,
 		terrain(10.f, 10.f, 50, 50, "../../../shared/assets/height-map.png"),
 		skybox("../../../shared/assets/skybox ")
 	{
@@ -42,14 +43,16 @@ namespace finalPractice
 		camera.setTarget(0, 0, -1);
 		camera.rotate   (cameraRotation);
 
-		terrain.increaseAngle(.005f);
+		meshLoader.update();
+		terrain   .update();
 	}
 
 	void Scene::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		terrain.render(camera);
+		meshLoader.render();
+		//terrain.render(camera);
 		skybox .render(camera);
 	}
 
@@ -62,7 +65,8 @@ namespace finalPractice
 
 		camera.setRatio(float(width) / float(height));
 
-		terrain.resize(newWidth, newHeight);
+		meshLoader.resize(newWidth, newHeight);
+		terrain   .resize(newWidth, newHeight);
 
 		glViewport(0, 0, width, height);
 	}

@@ -133,9 +133,9 @@ namespace finalPractice
 
 
 
-	void Terrain::increaseAngle(float increment)
+	void Terrain::update()
 	{
-		angle += increment;
+		angle += 0.005f;
 	}
 
 

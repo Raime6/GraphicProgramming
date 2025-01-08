@@ -11,45 +11,23 @@
 
 
 
-#include <glad/glad.h>
+#include "MeshForm.hpp"
 
 
 
 namespace meshCreation
 {
-	class Plane
+	class Plane : public MeshForm
 	{
-		private:
-		
-			enum
-			{
-				VBO_COORDINATES,
-				VBO_COLORS,
-				EBO_INDEX,
-				VBO_COUNT
-			};
-
-
-
-			static const GLfloat coordinates[];
-			static const GLfloat colors     [];
-			static const GLubyte index      [];
-
-		private:
-
-			GLuint vboIDs[VBO_COUNT];
-			GLuint vaoID;
-
 		public:
 
-			 Plane();
-			~Plane();
-
-			 void render();
+			Plane(float width, float height, unsigned cols, unsigned rows);
+	
+		private:
+			void buildPlane(float width, float height, unsigned cols, unsigned rows);
 	};
 }
 
 
 
 #endif
-

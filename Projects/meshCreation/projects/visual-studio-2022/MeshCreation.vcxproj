@@ -136,15 +136,19 @@
     <ClCompile Include="..\..\code\Cone.cpp" />
     <ClCompile Include="..\..\code\Cylinder.cpp" />
     <ClCompile Include="..\..\code\main.cpp" />
+    <ClCompile Include="..\..\code\MeshForm.cpp" />
     <ClCompile Include="..\..\code\Plane.cpp" />
     <ClCompile Include="..\..\code\Scene.cpp" />
+    <ClCompile Include="..\..\code\Shader.cpp" />
     <ClCompile Include="..\..\code\Window.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\code\Cone.hpp" />
     <ClInclude Include="..\..\code\Cylinder.hpp" />
+    <ClInclude Include="..\..\code\MeshForm.hpp" />
     <ClInclude Include="..\..\code\Plane.hpp" />
     <ClInclude Include="..\..\code\Scene.hpp" />
+    <ClInclude Include="..\..\code\Shader.hpp" />
     <ClInclude Include="..\..\code\Window.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

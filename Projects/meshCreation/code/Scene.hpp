@@ -30,9 +30,9 @@ namespace meshCreation
 			GLint  modelViewMatrixID;
 			GLint projectionMatrixID;
 
-			Cone     cone;
-			Cylinder cylinder;
-			Plane    plane;
+			Cone     cone     = Cone    (2, 1, 12);
+			Cylinder cylinder = Cylinder(2, 1, 12);
+			Plane    plane    = Plane   (8, 6,  4, 3);
 			float    angle;
 
 		public:
@@ -42,12 +42,5 @@ namespace meshCreation
 			void update();
 			void render();
 			void resize(unsigned width, unsigned height);
-
-		private:
-
-			GLuint compileShaders      ();
-			void   showCompilationError(GLuint  shaderID);
-			void   showLinkageError    (GLuint programID);
-
 	};
 }

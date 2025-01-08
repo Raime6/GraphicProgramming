@@ -65,7 +65,7 @@ namespace finalPractice
 			Terrain(float width, float depth, unsigned xSlices, unsigned zSlices, const std::string& texturePath);
 		   ~Terrain();
 
-			void increaseAngle(float);
+			void update();
 
 			void render(const Camera & camera);
 			void resize(int width, int height);

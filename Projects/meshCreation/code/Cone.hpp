@@ -11,41 +11,21 @@
 
 
 
-#include <glad/glad.h>
+#include "MeshForm.hpp"
 
 
 
 namespace meshCreation
 {
-	class Cone
+	class Cone : public MeshForm
 	{
-		private:
-
-			enum
-			{
-				VBO_COORDINATES,
-				VBO_COLORS,
-				EBO_INDEX,
-				VBO_COUNT
-			};
-
-
-
-			static const GLfloat coordinates[];
-			static const GLfloat colors     [];
-			static const GLubyte index      [];
-
-		private:
-
-			GLuint vboIDs[VBO_COUNT];
-			GLuint vaoID;
-
 		public:
 
-			 Cone();
-			~Cone();
+			 Cone(float height, float radius, unsigned numBaseVertex);
 
-			void render();
+		private:
+
+			void buildCone(float height, float radius, unsigned numBaseVertex);
 	};
 }
 
