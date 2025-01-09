@@ -48,18 +48,21 @@ namespace meshCreation
 
 
 
-	Scene::Scene(unsigned width, unsigned height) : angle(0)
+	Scene::Scene(unsigned width, unsigned height) :
+		shader  (vertexShaderCode, fragmentShaderCode),
+		cone    (2, 1, 12),
+		cylinder(2, 1, 12),
+		plane   (8, 6, 4, 3),
+		angle   (0)
 	{
 		glEnable          (GL_CULL_FACE);
 		glEnable         (GL_DEPTH_TEST);
 		glClearColor(.2f, .2f, .2f, .1f);
 
-		GLuint programID = compileShaders(vertexShaderCode, fragmentShaderCode);
+		shader.Use();
 
-		glUseProgram(programID);
-
-		modelViewMatrixID  = glGetUniformLocation(programID, "model_view_matrix");
-		projectionMatrixID = glGetUniformLocation(programID, "projection_matrix");
+		modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
+		projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
 		resize(width, height);
 	}

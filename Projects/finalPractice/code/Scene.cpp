@@ -51,8 +51,8 @@ namespace finalPractice
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		meshLoader.render();
-		//terrain.render(camera);
+		meshLoader.render(/*camera*/);
+		terrain.render(camera);
 		skybox .render(camera);
 	}
 

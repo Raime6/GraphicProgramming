@@ -12,7 +12,31 @@
 
 namespace meshCreation
 {
-	GLuint compileShaders(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
+	Shader::Shader(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
+	{
+		shaderID = compileShaders(vertexShaderCode, fragmentShaderCode);
+	}
+
+	Shader::~Shader()
+	{
+		glDeleteProgram(shaderID);
+	}
+
+
+
+	void Shader::Use()
+	{
+		glUseProgram(shaderID);
+	}
+
+	GLint Shader::getID()
+	{
+		return shaderID;
+	}
+
+	
+	
+	GLuint Shader::compileShaders(const std::string& vertexShaderCode, const std::string& fragmentShaderCode)
 	{
 		GLint succeeded = GL_FALSE;
 
@@ -55,7 +79,7 @@ namespace meshCreation
 		return programID;
 	}
 
-	void showCompilationError(GLuint shaderID)
+	void Shader::showCompilationError(GLuint shaderID)
 	{
 		static auto message = "Error while compiling a shader.";
 
@@ -73,7 +97,7 @@ namespace meshCreation
 		throw message;
 	}
 
-	void showLinkageError(GLuint programID)
+	void Shader::showLinkageError(GLuint programID)
 	{
 		static auto message = "Error while linking shaders.";
 

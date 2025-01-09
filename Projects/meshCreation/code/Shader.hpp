@@ -18,11 +18,26 @@
 
 namespace meshCreation
 {
-	GLuint compileShaders(const std::string& vertexShaderCode, const std::string& fragmentShaderCode);
+	class Shader
+	{
+		private:
+		
+			GLint shaderID;
 
-	void   showCompilationError(GLuint  shaderID);
+		public:
 
-	void   showLinkageError(GLuint programID);
+			Shader(const std::string & vertexShaderCode, const std::string & fragmentShaderCode);
+		   ~Shader();
+
+		   void  Use();
+		   GLint getID();
+	
+		private:
+
+			GLuint compileShaders(const std::string& vertexShaderCode, const std::string& fragmentShaderCode);
+			void   showCompilationError(GLuint  shaderID);
+			void   showLinkageError(GLuint programID);
+	};
 }
 
 

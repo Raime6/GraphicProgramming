@@ -34,7 +34,7 @@ namespace finalPractice
 		""
 		"void main()"
 		"{"
-		"   float sample = texture (sampler, vertex_uv).r;"
+		"   float sample = 0.0;"
 		"   intensity    = sample * 0.75 + 0.25;"
 		"   float height = sample * max_height;"
 		"   vec4  xyzw   = vec4(vertex_xz.x, height, vertex_xz.y, 1.0);"
@@ -50,7 +50,7 @@ namespace finalPractice
 		""
 		"void main()"
 		"{"
-		"    fragment_color = vec4(intensity, intensity, intensity, 1.0);"
+		"    fragment_color = vec4(1.0, 1.0, 1.0, 1.0);"
 		"}";
 
 
@@ -121,6 +121,8 @@ namespace finalPractice
 
 		texture.setID(texture.createTexture2D< Monochrome8 >(texturePath));
 		assert(texture.isOk());
+
+		resize(1024, 576);
 	}
 
 	Terrain::~Terrain()
@@ -142,13 +144,11 @@ namespace finalPractice
 
 	void Terrain::render(const Camera & camera)
 	{
-		//glUseProgram(shaderProgramID);
-
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		glUseProgram(shaderProgramID);
 
 		glm::mat4 modelViewMatrix(1);
 
-		modelViewMatrix = glm::translate(modelViewMatrix,        glm::vec3(0.f, 0.f, -11.f));
+		modelViewMatrix = glm::translate(modelViewMatrix,        glm::vec3(0.f, 0.f, -30.f));
 		modelViewMatrix = glm::rotate   (modelViewMatrix,   .4f, glm::vec3(1.f, 0.f,   0.f));
 		modelViewMatrix = glm::rotate   (modelViewMatrix, angle, glm::vec3(0.f, 1.f,   0.f));
 
@@ -158,9 +158,7 @@ namespace finalPractice
 
 		glBindVertexArray(vaoID);
 		glDrawArrays(GL_LINE_STRIP, 0, numVertex);
-		/*glBindVertexArray(0);
-
-		glUseProgram(0);*/
+		glBindVertexArray(0);
 	}
 
 	void Terrain::resize(int width, int height)

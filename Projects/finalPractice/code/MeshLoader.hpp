@@ -43,6 +43,8 @@ namespace finalPractice
 			GLint   modelViewMatrixId;
 			GLint  projectionMatrixID;
 
+			GLuint    shaderProgramID;
+
 			float               angle;
 
 		public:

@@ -9,6 +9,7 @@
 #include "Cone.hpp"
 #include "Cylinder.hpp"
 #include "Plane.hpp"
+#include "Shader.hpp"
 
 
 
@@ -27,13 +28,16 @@ namespace meshCreation
 			static const string   vertexShaderCode;
 			static const string fragmentShaderCode;
 
-			GLint  modelViewMatrixID;
-			GLint projectionMatrixID;
+			GLint     modelViewMatrixID;
+			GLint    projectionMatrixID;
 
-			Cone     cone     = Cone    (2, 1, 12);
-			Cylinder cylinder = Cylinder(2, 1, 12);
-			Plane    plane    = Plane   (8, 6,  4, 3);
-			float    angle;
+			Shader               shader;
+
+			Cone				   cone;
+			Cylinder           cylinder;
+			Plane                 plane;
+			
+			float                 angle;
 
 		public:
 

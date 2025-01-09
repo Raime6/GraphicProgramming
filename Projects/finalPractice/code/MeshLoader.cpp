@@ -53,7 +53,7 @@ namespace finalPractice
 
     MeshLoader::MeshLoader(const std::string& meshFilePath) : angle(0)
     {
-        GLuint shaderProgramID = compileShaders(vertexShaderCode, fragmentShaderCode);
+        shaderProgramID = compileShaders(vertexShaderCode, fragmentShaderCode);
 
         glUseProgram(shaderProgramID);
 
@@ -78,10 +78,13 @@ namespace finalPractice
 
     void MeshLoader::render()
     {
+        glUseProgram(shaderProgramID);
         glm::mat4 modelViewMatrix(1);
 
         modelViewMatrix = glm::translate(modelViewMatrix, glm::vec3(0.f, 0.f, -2.75f));
         modelViewMatrix = glm::rotate   (modelViewMatrix, angle, glm::vec3(0.f, 1.f, 0.f));
+
+        // modelViewMatrix = inversaCamara * modelViewMatrix;
 
         glUniformMatrix4fv(modelViewMatrixId, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
 
