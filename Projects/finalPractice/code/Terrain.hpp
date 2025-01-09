@@ -14,11 +14,8 @@
 #include "Camera.hpp"
 #include "Color.hpp"
 #include "ColorBuffer.hpp"
+#include "Shader.hpp"
 #include "Texture.hpp"
-
-
-
-#include <Shader.hpp>
 
 
 
@@ -41,6 +38,8 @@ namespace finalPractice
 			static const std::string fragmentShaderCode;
 			static const std::string        texturePath;
 
+			Shader             shader;
+
 		private:
 
 			GLuint  vboIDs[VBO_COUNT];
@@ -50,7 +49,6 @@ namespace finalPractice
 
 		private:
 
-			GLuint    shaderProgramID;
 			Texture           texture;
 
 			GLint	modelViewMatrixID;

@@ -9,7 +9,6 @@
 #include <cassert>
 #include <gtc/type_ptr.hpp>
 #include <iostream>
-#include <Shader.hpp>
 
 
 
@@ -88,15 +87,14 @@ namespace finalPractice
 
 
 
-	Skybox::Skybox(const std::string & texturePath)
+	Skybox::Skybox(const std::string & texturePath) :
+		shader(vertexShaderCode, fragmentShaderCode)
 	{
 		texture.setID(texture.createTextureCubeMap< Rgba8888 >(texturePath));
 		assert(texture.isOk());
 
-		shaderProgramID    = compileShaders(vertexShaderCode, fragmentShaderCode);
-
-		modelViewMatrixID  = glGetUniformLocation(shaderProgramID, "model_view_matrix");
-		projectionMatrixID = glGetUniformLocation(shaderProgramID, "projection_matrix");
+		modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
+		projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 		
 		glGenBuffers     (1, &vboID);
 		glGenVertexArrays(1, &vaoID);
@@ -116,17 +114,13 @@ namespace finalPractice
 	{
 		glDeleteVertexArrays(1, &vaoID);
 		glDeleteBuffers		(1, &vboID);
-
-		glDeleteProgram(shaderProgramID);
 	}
 
 
 
 	void Skybox::render(const Camera & camera)
 	{
-		glUseProgram(shaderProgramID);
-
-		//glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+		shader.Use();
 
 		texture.bind();
 
@@ -144,6 +138,5 @@ namespace finalPractice
 		glDepthMask       (GL_TRUE);
 
 		glBindVertexArray (0);
-		glUseProgram      (0);
 	}
 }

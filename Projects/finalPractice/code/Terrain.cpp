@@ -56,6 +56,7 @@ namespace finalPractice
 
 
 	Terrain::Terrain(float width, float depth, unsigned xSlices, unsigned zSlices, const std::string& texturePath) :
+		shader(vertexShaderCode, fragmentShaderCode),
 		angle(0.f)
 	{
 		numVertex = xSlices * zSlices;
@@ -108,14 +109,10 @@ namespace finalPractice
 
 		glBindVertexArray(0);
 
+		modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
+		projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
-
-		shaderProgramID = compileShaders(vertexShaderCode, fragmentShaderCode);
-
-		modelViewMatrixID  = glGetUniformLocation(shaderProgramID, "model_view_matrix");
-		projectionMatrixID = glGetUniformLocation(shaderProgramID, "projection_matrix");
-
-		glUniform1f(glGetUniformLocation(shaderProgramID, "max_height"), 5.f);
+		glUniform1f(glGetUniformLocation(shader.getID(), "max_height"), 5.f);
 
 
 
@@ -129,8 +126,6 @@ namespace finalPractice
 	{
 		glDeleteVertexArrays(1, &vaoID);
 		glDeleteBuffers(VBO_COUNT, vboIDs);
-
-		glDeleteProgram(shaderProgramID);
 	}
 
 
@@ -144,7 +139,7 @@ namespace finalPractice
 
 	void Terrain::render(const Camera & camera)
 	{
-		glUseProgram(shaderProgramID);
+		shader.Use();
 
 		glm::mat4 modelViewMatrix(1);
 

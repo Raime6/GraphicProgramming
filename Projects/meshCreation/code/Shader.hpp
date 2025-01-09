@@ -29,8 +29,8 @@ namespace meshCreation
 			Shader(const std::string & vertexShaderCode, const std::string & fragmentShaderCode);
 		   ~Shader();
 
-		   void  Use();
-		   GLint getID();
+		   void    Use();
+		   GLuint  getID();
 	
 		private:
 

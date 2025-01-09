@@ -3,7 +3,6 @@
 // Author: Xavier Canals
 
 #include "MeshLoader.hpp"
-#include "Shader.hpp"
 
 
 
@@ -51,14 +50,11 @@ namespace finalPractice
 
 
 
-    MeshLoader::MeshLoader(const std::string& meshFilePath) : angle(0)
+    MeshLoader::MeshLoader(const std::string& meshFilePath) :
+        shader(vertexShaderCode, fragmentShaderCode)
     {
-        shaderProgramID = compileShaders(vertexShaderCode, fragmentShaderCode);
-
-        glUseProgram(shaderProgramID);
-
-        modelViewMatrixId  = glGetUniformLocation(shaderProgramID, "model_view_matrix");
-        projectionMatrixID = glGetUniformLocation(shaderProgramID, "projection_matrix");
+        modelViewMatrixId  = glGetUniformLocation(shader.getID(), "model_view_matrix");
+        projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
         loadMesh(meshFilePath);
     }
@@ -71,20 +67,16 @@ namespace finalPractice
 
 
 
-    void MeshLoader::update()
+    void MeshLoader::render(const Camera & camera)
     {
-        angle += 0.01f;
-    }
+        shader.Use();
 
-    void MeshLoader::render()
-    {
-        glUseProgram(shaderProgramID);
         glm::mat4 modelViewMatrix(1);
 
-        modelViewMatrix = glm::translate(modelViewMatrix, glm::vec3(0.f, 0.f, -2.75f));
-        modelViewMatrix = glm::rotate   (modelViewMatrix, angle, glm::vec3(0.f, 1.f, 0.f));
+        modelViewMatrix = glm::translate(modelViewMatrix, glm::vec3(0.f, -3.5f, -4.f));
+        modelViewMatrix = glm::scale    (modelViewMatrix, glm::vec3(1.f,  1.f,   1.f));
 
-        // modelViewMatrix = inversaCamara * modelViewMatrix;
+        modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
 
         glUniformMatrix4fv(modelViewMatrixId, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
 
@@ -104,6 +96,8 @@ namespace finalPractice
     void MeshLoader::loadMesh(const std::string & meshFilePath)
     {
         Assimp::Importer importer;
+
+        shader.Use();
 
         auto scene = importer.ReadFile
         (
@@ -133,12 +127,7 @@ namespace finalPractice
             std::vector< glm::vec3 > vertexColor(numVertex);
 
             for (auto& color : vertexColor)
-                color = glm::vec3
-                (
-                    float(rand()) / float(RAND_MAX),
-                    float(rand()) / float(RAND_MAX),
-                    float(rand()) / float(RAND_MAX)
-                );
+                color = glm::vec3(.3f, .3f, .3f);
 
             glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
             glBufferData(GL_ARRAY_BUFFER, vertexColor.size() * sizeof(glm::vec3), vertexColor.data(), GL_STATIC_DRAW);

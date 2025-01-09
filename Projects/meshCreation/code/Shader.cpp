@@ -29,7 +29,7 @@ namespace meshCreation
 		glUseProgram(shaderID);
 	}
 
-	GLint Shader::getID()
+	GLuint Shader::getID()
 	{
 		return shaderID;
 	}

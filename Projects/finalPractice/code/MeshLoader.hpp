@@ -11,6 +11,11 @@
 
 
 
+#include "Camera.hpp"
+#include "Shader.hpp"
+
+
+
 #include <glad/glad.h>
 #include <string>
 
@@ -35,6 +40,8 @@ namespace finalPractice
 			static const std::string   vertexShaderCode;
 			static const std::string fragmentShaderCode;
 
+			Shader			   shader;
+
 			GLuint  vboIDs[VBO_COUNT];
 			GLuint              vaoID;
 
@@ -42,10 +49,6 @@ namespace finalPractice
 
 			GLint   modelViewMatrixId;
 			GLint  projectionMatrixID;
-
-			GLuint    shaderProgramID;
-
-			float               angle;
 
 		public:
 
@@ -55,7 +58,7 @@ namespace finalPractice
 		public:
 
 			void update();
-			void render();
+			void render(const Camera & camera);
 			void resize(int width, int height);
 
 		private:

@@ -39,10 +39,10 @@
     <ClInclude Include="..\..\code\Terrain.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\shared\code\Shader.hpp">
+    <ClInclude Include="..\..\code\MeshLoader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\code\MeshLoader.hpp">
+    <ClInclude Include="..\..\code\Shader.hpp">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -65,10 +65,10 @@
     <ClCompile Include="..\..\code\Terrain.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\..\shared\code\Shader.cpp">
+    <ClCompile Include="..\..\code\MeshLoader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\..\code\MeshLoader.cpp">
+    <ClCompile Include="..\..\code\Shader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

@@ -12,6 +12,7 @@
 
 
 #include "Camera.hpp"
+#include "Shader.hpp"
 #include "Texture.hpp"
 
 
@@ -26,16 +27,17 @@ namespace finalPractice
 			static const std::string   vertexShaderCode;
 			static const std::string fragmentShaderCode;
 
+			Shader				shader;
+
 		private:
 
-			GLuint		               vboID;
-			GLuint		               vaoID;
-			GLuint		     shaderProgramID;
+			GLuint				 vboID;
+			GLuint				 vaoID;
 
-			GLint		   modelViewMatrixID;
-			GLint		  projectionMatrixID;
+			GLint    modelViewMatrixID;
+			GLint   projectionMatrixID;
 
-			Texture                  texture;
+			Texture            texture;
 
 		public:
 

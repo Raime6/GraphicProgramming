@@ -9,9 +9,9 @@
 namespace finalPractice
 {
 	Scene::Scene(int width, int height) :
-		meshLoader("../../../shared/assets/stanford-bunny.obj")             ,
-		terrain(10.f, 10.f, 50, 50, "../../../shared/assets/height-map.png"),
-		skybox("../../../shared/assets/skybox ")
+		meshLoader("../../../assets/table.fbx")             ,
+		terrain(10.f, 10.f, 50, 50, "../../../assets/height-map.png"),
+		skybox("../../../assets/skybox ")
 	{
 		glEnable (GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
@@ -43,7 +43,6 @@ namespace finalPractice
 		camera.setTarget(0, 0, -1);
 		camera.rotate   (cameraRotation);
 
-		meshLoader.update();
 		terrain   .update();
 	}
 
@@ -51,9 +50,9 @@ namespace finalPractice
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		meshLoader.render(/*camera*/);
-		terrain.render(camera);
-		skybox .render(camera);
+		meshLoader.render(camera);
+		terrain   .render(camera);
+		skybox    .render(camera);
 	}
 
 

@@ -104,7 +104,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include;../../../libraries/assimp/include;../../../shared/code</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include;../../../libraries/assimp/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -121,7 +121,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include;../../../libraries/assimp/include;../../../shared/code</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include;../../../libraries/soil2/include;../../../libraries/half/include;../../../libraries/assimp/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -133,22 +133,22 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\..\shared\code\Shader.hpp" />
     <ClInclude Include="..\..\code\Camera.hpp" />
     <ClInclude Include="..\..\code\Color.hpp" />
     <ClInclude Include="..\..\code\ColorBuffer.hpp" />
     <ClInclude Include="..\..\code\MeshLoader.hpp" />
     <ClInclude Include="..\..\code\Scene.hpp" />
+    <ClInclude Include="..\..\code\Shader.hpp" />
     <ClInclude Include="..\..\code\Skybox.hpp" />
     <ClInclude Include="..\..\code\Texture.hpp" />
     <ClInclude Include="..\..\code\Terrain.hpp" />
     <ClInclude Include="..\..\code\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\..\..\shared\code\Shader.cpp" />
     <ClCompile Include="..\..\code\main.cpp" />
     <ClCompile Include="..\..\code\MeshLoader.cpp" />
     <ClCompile Include="..\..\code\Scene.cpp" />
+    <ClCompile Include="..\..\code\Shader.cpp" />
     <ClCompile Include="..\..\code\Skybox.cpp" />
     <ClCompile Include="..\..\code\Texture.cpp" />
     <ClCompile Include="..\..\code\Terrain.cpp" />
