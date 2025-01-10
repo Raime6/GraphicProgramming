@@ -25,7 +25,7 @@ namespace finalPractice
 		private:
 
 			Camera		   camera;
-			MeshLoader meshLoader;
+			MeshLoader      table;
 			Skybox		   skybox;
 			Terrain       terrain;
 

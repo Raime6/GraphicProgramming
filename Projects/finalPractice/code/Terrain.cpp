@@ -116,8 +116,8 @@ namespace finalPractice
 
 
 
-		texture.setID(texture.createTexture2D< Monochrome8 >(texturePath));
-		assert(texture.isOk());
+		/*texture.setID(texture.createTexture2D< Monochrome8 >(texturePath));
+		assert(texture.isOk());*/
 
 		resize(1024, 576);
 	}

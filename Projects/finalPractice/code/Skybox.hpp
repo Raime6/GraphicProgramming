@@ -28,6 +28,7 @@ namespace finalPractice
 			static const std::string fragmentShaderCode;
 
 			Shader				shader;
+			Texture            texture;
 
 		private:
 
@@ -36,8 +37,6 @@ namespace finalPractice
 
 			GLint    modelViewMatrixID;
 			GLint   projectionMatrixID;
-
-			Texture            texture;
 
 		public:
 

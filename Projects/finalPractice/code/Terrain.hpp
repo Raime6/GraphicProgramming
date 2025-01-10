@@ -39,6 +39,7 @@ namespace finalPractice
 			static const std::string        texturePath;
 
 			Shader             shader;
+			Texture           texture;
 
 		private:
 
@@ -48,8 +49,6 @@ namespace finalPractice
 			GLsizei         numVertex;
 
 		private:
-
-			Texture           texture;
 
 			GLint	modelViewMatrixID;
 			GLint  projectionMatrixID;

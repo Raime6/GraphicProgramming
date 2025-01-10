@@ -12,6 +12,7 @@
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
+#include <iostream>
 #include <vector>
 
 
@@ -26,37 +27,42 @@ namespace finalPractice
         "uniform mat4 projection_matrix;"
         ""
         "layout (location = 0) in vec3 vertex_coordinates;"
-        "layout (location = 1) in vec3 vertex_color;"
+        "layout (location = 1) in vec2 vertex_texture_uv;"
         ""
-        "out vec3 front_color;"
+        "out vec2 texture_uv;"
         ""
         "void main()"
         "{"
         "   gl_Position = projection_matrix * model_view_matrix * vec4(vertex_coordinates, 1.0);"
-        "   front_color = vertex_color;"
+        "   texture_uv  = vertex_texture_uv;"
         "}";
 
     const std::string MeshLoader::fragmentShaderCode =
 
         "#version 330\n"
         ""
-        "in  vec3    front_color;"
+        "uniform sampler2D sampler;"
+        ""
+        "in  vec2     texture_uv;"
         "out vec4 fragment_color;"
         ""
         "void main()"
         "{"
-        "    fragment_color = vec4(front_color, 1.0);"
+        "    fragment_color = texture(sampler, texture_uv);"
         "}";
 
 
 
-    MeshLoader::MeshLoader(const std::string& meshFilePath) :
+    MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
         shader(vertexShaderCode, fragmentShaderCode)
     {
-        modelViewMatrixId  = glGetUniformLocation(shader.getID(), "model_view_matrix");
+        modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
         loadMesh(meshFilePath);
+
+        texture.setID(texture.createTexture2D< Rgba8888 >(texturePath));
+        assert(texture.isOk());
     }
 
     MeshLoader::~MeshLoader()
@@ -74,11 +80,12 @@ namespace finalPractice
         glm::mat4 modelViewMatrix(1);
 
         modelViewMatrix = glm::translate(modelViewMatrix, glm::vec3(0.f, -3.5f, -4.f));
-        modelViewMatrix = glm::scale    (modelViewMatrix, glm::vec3(1.f,  1.f,   1.f));
 
         modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
 
-        glUniformMatrix4fv(modelViewMatrixId, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+        glUniformMatrix4fv(modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+
+        texture.bind();
 
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, numIndex, GL_UNSIGNED_SHORT, 0);
@@ -124,16 +131,27 @@ namespace finalPractice
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            std::vector< glm::vec3 > vertexColor(numVertex);
+            if (not mesh->HasTextureCoords(0))
+                std::cerr << "Mesh doesn't have UV coordinates" << std::endl;
+            else
+            {
+                std::vector< glm::vec2 > textureCoords(mesh->mNumVertices);
 
-            for (auto& color : vertexColor)
-                color = glm::vec3(.3f, .3f, .3f);
+                for (unsigned i = 0; i < mesh->mNumVertices; ++i)
+                {
+                    textureCoords[i] = glm::vec2
+                    (
+                        mesh->mTextureCoords[0][i].x,
+                        1.f - mesh->mTextureCoords[0][i].y
+                    );
+                }
 
-            glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
-            glBufferData(GL_ARRAY_BUFFER, vertexColor.size() * sizeof(glm::vec3), vertexColor.data(), GL_STATIC_DRAW);
+                glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
+                glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), textureCoords.data(), GL_STATIC_DRAW);
 
-            glEnableVertexAttribArray(1);
-            glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+                glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+                glEnableVertexAttribArray(1);
+            }
 
             numIndex = mesh->mNumFaces * 3;
 

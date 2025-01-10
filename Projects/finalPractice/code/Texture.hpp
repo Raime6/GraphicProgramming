@@ -46,8 +46,18 @@ namespace finalPractice
 			Texture			    (const Texture &) = delete;
 			Texture& operator = (const Texture &) = delete;
 
+		public:
+
+			void setID(GLuint id);
+
+		public:
+
+			bool isOk() const;
+
+			bool bind() const;
+
 		private:
-			
+
 			template< typename COLOR_FORMAT >
 			std::unique_ptr< ColorBuffer< COLOR_FORMAT > > loadImage(const std::string& imagePath)
 			{
@@ -87,13 +97,8 @@ namespace finalPractice
 
 		public:
 
-			void setID(GLuint id)
-			{
-				ID = id;
-			}
-
 			template< typename COLOR_FORMAT >
-			GLuint createTexture2D(const std::string & texturePath)
+			GLuint createTexture2D(const std::string& texturePath)
 			{
 				auto image = loadImage< COLOR_FORMAT >(texturePath);
 
@@ -101,32 +106,32 @@ namespace finalPractice
 				{
 					GLuint textureID;
 
-					glEnable     (GL_TEXTURE_2D);
+					glEnable(GL_TEXTURE_2D);
 					glGenTextures(1, &textureID);
 					glBindTexture(GL_TEXTURE_2D, textureID);
 
-					glTexParameteri(GL_TEXTURE_2D,     GL_TEXTURE_WRAP_S,        GL_CLAMP_TO_EDGE);
-					glTexParameteri(GL_TEXTURE_2D,     GL_TEXTURE_WRAP_T,        GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
-					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,               GL_LINEAR);
+					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
 					glTexImage2D
 					(
-						GL_TEXTURE_2D     ,
-						0                 ,
-						GL_R8             ,
-						image->getWidth() ,
+						GL_TEXTURE_2D,
+						0,
+						GL_RGBA,
+						image->getWidth(),
 						image->getHeight(),
-						0                 ,
-						GL_RED            ,
-						GL_UNSIGNED_BYTE  ,
+						0,
+						GL_RGBA,
+						GL_UNSIGNED_BYTE,
 						image->colors()
 					);
 
 					glGenerateMipmap(GL_TEXTURE_2D);
 
-					textureIsLoaded =      true;
-					type            = TEXTURE2D;
+					textureIsLoaded = true;
+					type = TEXTURE2D;
 
 					return textureID;
 				}
@@ -135,7 +140,7 @@ namespace finalPractice
 			}
 
 			template< typename COLOR_FORMAT >
-			GLuint createTextureCubeMap(const std::string & texturePath)
+			GLuint createTextureCubeMap(const std::string& texturePath)
 			{
 				std::vector< std::unique_ptr< ColorBuffer< COLOR_FORMAT > > > textureSides(6);
 
@@ -172,7 +177,7 @@ namespace finalPractice
 
 				for (size_t i = 0; i < 6; ++i)
 				{
-					ColorBuffer< COLOR_FORMAT > & texture = *textureSides[i];
+					ColorBuffer< COLOR_FORMAT >& texture = *textureSides[i];
 
 					glTexImage2D
 					(
@@ -188,41 +193,10 @@ namespace finalPractice
 					);
 				}
 
-				textureIsLoaded =    true;
-				type            = CUBEMAP;
-				
+				textureIsLoaded = true;
+				type = CUBEMAP;
+
 				return textureID;
-			}
-
-		public:
-
-			bool isOk() const
-			{
-				return textureIsLoaded;
-			}
-
-			bool bind() const
-			{
-				if (textureIsLoaded)
-				{
-					switch (type)
-					{
-						case TEXTURE2D:
-						{
-							glBindTexture(GL_TEXTURE_2D, ID);
-							break;
-						}
-						case CUBEMAP:
-						{
-							glBindTexture(GL_TEXTURE_CUBE_MAP, ID);
-							break;
-						}
-					}
-
-					return true;
-				}
-
-				return false;
 			}
 	};
 }

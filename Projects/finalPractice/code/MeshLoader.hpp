@@ -13,6 +13,7 @@
 
 #include "Camera.hpp"
 #include "Shader.hpp"
+#include "Texture.hpp"
 
 
 
@@ -41,23 +42,25 @@ namespace finalPractice
 			static const std::string fragmentShaderCode;
 
 			Shader			   shader;
+			Texture           texture;
+
+		private:
 
 			GLuint  vboIDs[VBO_COUNT];
 			GLuint              vaoID;
 
 			GLsizei         numIndex;
 
-			GLint   modelViewMatrixId;
+			GLint   modelViewMatrixID;
 			GLint  projectionMatrixID;
 
 		public:
 
-			MeshLoader(const std::string& meshFilePath);
+			MeshLoader(const std::string& meshFilePath, const std::string& texturePath);
 		   ~MeshLoader();
 
 		public:
 
-			void update();
 			void render(const Camera & camera);
 			void resize(int width, int height);
 

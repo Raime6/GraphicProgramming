@@ -9,9 +9,9 @@
 namespace finalPractice
 {
 	Scene::Scene(int width, int height) :
-		meshLoader("../../../assets/table.fbx")             ,
-		terrain(10.f, 10.f, 50, 50, "../../../assets/height-map.png"),
-		skybox("../../../assets/skybox ")
+		table  ("../../../assets/table.fbx", "../../../assets/table-texture.png"),
+		terrain(10.f, 10.f, 50, 50, "../../../assets/height-map.png")            ,
+		skybox ("../../../assets/skybox ")
 	{
 		glEnable (GL_CULL_FACE);
 		glEnable(GL_DEPTH_TEST);
@@ -50,9 +50,9 @@ namespace finalPractice
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		meshLoader.render(camera);
-		terrain   .render(camera);
-		skybox    .render(camera);
+		table  .render(camera);
+		terrain.render(camera);
+		skybox .render(camera);
 	}
 
 
@@ -64,8 +64,8 @@ namespace finalPractice
 
 		camera.setRatio(float(width) / float(height));
 
-		meshLoader.resize(newWidth, newHeight);
-		terrain   .resize(newWidth, newHeight);
+		table  .resize(newWidth, newHeight);
+		terrain.resize(newWidth, newHeight);
 
 		glViewport(0, 0, width, height);
 	}
