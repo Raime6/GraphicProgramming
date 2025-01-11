@@ -90,7 +90,6 @@ namespace finalPractice
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
         needTexture = false;
-
         loadMesh(meshFilePath);
     }
 
@@ -101,7 +100,6 @@ namespace finalPractice
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
         needTexture = true;
-
         loadMesh(meshFilePath);
 
         texture.setID(texture.createTexture2D< Rgba8888 >(texturePath, Texture::TypeTexture2D::ALBEDO));
@@ -116,14 +114,15 @@ namespace finalPractice
 
 
 
-    void MeshLoader::render(const Camera & camera, glm::vec3 tanslateVector, glm::vec3 scaleVector)
+    void MeshLoader::render(const Camera & camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector)
     {
         shader.Use();
 
         glm::mat4 modelViewMatrix(1);
 
-        modelViewMatrix = glm::translate(modelViewMatrix, tanslateVector);
-        modelViewMatrix = glm::scale    (modelViewMatrix,    scaleVector);
+        modelViewMatrix = glm::translate(modelViewMatrix,      tanslateVector);
+        modelViewMatrix = glm::rotate   (modelViewMatrix, angle, rotateVector);
+        modelViewMatrix = glm::scale    (modelViewMatrix,         scaleVector);
 
         modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
 
@@ -183,7 +182,7 @@ namespace finalPractice
 
                 for (auto& color : vertex_colors)
                 {
-                    color = glm::vec3(1.f, 1.f, 1.f);
+                    color = glm::vec3(.3f, .3f, .3f);
                 }
 
                 glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);

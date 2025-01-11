@@ -67,7 +67,7 @@ namespace finalPractice
 
 		public:
 
-			void render(const Camera & camera, glm::vec3 tanslateVector, glm::vec3 scaleVector);
+			void render(const Camera& camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector);
 			void resize(int width, int height);
 
 		private:

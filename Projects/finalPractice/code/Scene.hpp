@@ -22,41 +22,41 @@ namespace finalPractice
 {
 	class Scene
 	{
-		private:
+	private:
 
-			Camera		   camera;
-			MeshLoader      table;
-			//MeshLoader    capsule;
-			Skybox		   skybox;
-			Terrain       terrain;
+		Camera		   camera;
+		MeshLoader      table;
+		MeshLoader    beerMug;
+		Skybox		   skybox;
+		Terrain       terrain;
 
-			int		   	    width;
-			int            height;
+		int		   	    width;
+		int            height;
 
-			float    angleAroundX;
-			float    angleAroundY;
-			float     angleDeltaX;
-			float     angleDeltaY;
+		float    angleAroundX;
+		float    angleAroundY;
+		float     angleDeltaX;
+		float     angleDeltaY;
 
-			bool   pointerPressed;
-			int	     lastPointerX;
-			int      lastPointerY;
+		bool   pointerPressed;
+		int	     lastPointerX;
+		int      lastPointerY;
 
-		public:
-			bool keys[4] = { false, false, false, false };
+	public:
+		bool keys[4] = { false, false, false, false };
 
-		public:
+	public:
 
-			Scene(int width, int height);
+		Scene(int width, int height);
 
-			void update();
-			void render();
+		void update();
+		void render();
 
-		public:
+	public:
 
-			void resize (int width   , int height);
-			void onDrag (int pointerX, int pointerY);
-			void onClick(int pointerX, int pointerY, bool down);
+		void resize(int width, int height);
+		void onDrag(int pointerX, int pointerY);
+		void onClick(int pointerX, int pointerY, bool down);
 	};
 }
 

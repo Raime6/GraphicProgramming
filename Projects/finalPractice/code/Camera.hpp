@@ -78,14 +78,14 @@ namespace finalPractice
 
 			void reset(float newFov, float newNearZ, float newFarZ, float newRatio)
 			{
-				setFov      (       newFov);
-				setNearZ    (     newNearZ);
-				setFarZ     (      newFarZ);
-				setRatio    (     newRatio);
-				setLocation (0.f, 0.f, 0.f);
-				setRotationX(          0.f);
-				setRotationY(          0.f);
-				calculateProjectionMatrix();
+				setFov      (         newFov);
+				setNearZ    (       newNearZ);
+				setFarZ     (        newFarZ);
+				setRatio    (       newRatio);
+				setLocation (0.f, 0.f, -2.5f);
+				setRotationX(            0.f);
+				setRotationY(            0.f);
+				calculateProjectionMatrix  ();
 			}
 
 		public:
