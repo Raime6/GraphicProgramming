@@ -84,7 +84,10 @@ namespace finalPractice
 
 
     MeshLoader::MeshLoader(const std::string& meshFilePath) :
-        shader(vertexShaderCode, fragmentShaderCode)
+        shader(vertexShaderCode, fragmentShaderCode),
+        angle(0),
+        posY (0),
+        moveDown(false)
     {
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
@@ -94,7 +97,10 @@ namespace finalPractice
     }
 
     MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
-        shader(vertexShaderCodeTexture, fragmentShaderCodeTexture)
+        shader(vertexShaderCodeTexture, fragmentShaderCodeTexture),
+        angle(0),
+        posY (0),
+        moveDown(false)
     {
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
@@ -114,6 +120,11 @@ namespace finalPractice
 
 
 
+    void MeshLoader::update()
+    {
+        crystalAnimation();
+    }
+    
     void MeshLoader::render(const Camera & camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector)
     {
         shader.Use();
@@ -139,6 +150,16 @@ namespace finalPractice
         glm::mat4 projectionMatrix = glm::perspective(20.f, GLfloat(width) / height, 1.f, 5000.f);
 
         glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+    }
+
+    float MeshLoader::getAngle()
+    {
+        return angle;
+    }
+
+    float MeshLoader::getPosY()
+    {
+        return posY;
     }
 
 
@@ -230,6 +251,26 @@ namespace finalPractice
 
             glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIDs[EBO_INDEX]);
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, index.size() * sizeof(GLshort), index.data(), GL_STATIC_DRAW);
+        }
+    }
+
+    void MeshLoader::crystalAnimation()
+    {
+        angle += 0.01f;
+
+        if (moveDown)
+        {
+            posY -= 0.001f;
+
+            if (posY <= -0.2f)
+                moveDown = false;
+        }
+        else if (not moveDown)
+        {
+            posY += 0.001f;
+
+            if (posY >= 0.2f)
+                moveDown = true;
         }
     }
 }

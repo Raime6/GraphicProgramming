@@ -58,6 +58,9 @@ namespace finalPractice
 			GLint  projectionMatrixID;
 
 			bool		  needTexture;
+			bool			 moveDown;
+			float               angle;
+			float                posY;
 
 		public:
 
@@ -67,12 +70,18 @@ namespace finalPractice
 
 		public:
 
-			void render(const Camera& camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector);
-			void resize(int width, int height);
+			void  update();
+			void  render(const Camera& camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector);
+			void  resize(int width, int height);
+
+			float getAngle();
+			float getPosY ();
 
 		private:
 
 			void loadMesh(const std::string & meshFilePath);
+
+			void crystalAnimation();
 	};
 }
 

@@ -9,8 +9,9 @@
 namespace finalPractice
 {
 	Scene::Scene(int width, int height) :
-		table("../../../assets/table.fbx", "../../../assets/table_textureAlbedo.png"),
-		beerMug("../../../assets/beerMug.fbx" , "../../../assets/beerMug_textureAlbedo.png" ),
+		table  ("../../../assets/table.fbx"  , "../../../assets/table_textureAlbedo.png"  ),
+		beerMug("../../../assets/beerMug.fbx", "../../../assets/beerMug_textureAlbedo.png"),
+		crystal("../../../assets/crystal.fbx" , "../../../assets/crystal_textureAlbedo.png" ),
 		terrain(10.f, 10.f, 50, 50, "../../../assets/height_map.png"),
 		skybox ("../../../assets/skybox_")
 	{
@@ -44,15 +45,16 @@ namespace finalPractice
 
 		camera.move(movement);
 
+		crystal.update();
 		terrain.update();
 	}
 
 	void Scene::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-		table  .render(camera, glm::vec3(0.f, -2.f, 0.f),  0.f  , glm::vec3(1, 1, 1), glm::vec3(0.5f, 0.5f, 0.5f));
-		beerMug.render(camera, glm::vec3(0.f, 0.f, -1.f), -1.57f, glm::vec3(1, 0, 0), glm::vec3(1.f, 1.f, 1.f   ));
+		table  .render(camera, glm::vec3(0.f, -2.f,  0.f),              0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.5f, 0.5f, 0.5f));
+		beerMug.render(camera, glm::vec3(0.f,  0.f, -1.f),             -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f   ));
+		crystal.render(camera, glm::vec3(0.f, crystal.getPosY(),  0.f), crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f));
 
 		terrain.render(camera);
 		skybox .render(camera);
@@ -69,6 +71,7 @@ namespace finalPractice
 
 		table  .resize(newWidth, newHeight);
 		beerMug.resize(newWidth, newHeight);
+		crystal.resize(newWidth, newHeight);
 
 		terrain.resize(newWidth, newHeight);
 

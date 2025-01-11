@@ -27,6 +27,7 @@ namespace finalPractice
 		Camera		   camera;
 		MeshLoader      table;
 		MeshLoader    beerMug;
+		MeshLoader    crystal;
 		Skybox		   skybox;
 		Terrain       terrain;
 
