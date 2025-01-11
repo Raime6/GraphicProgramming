@@ -19,8 +19,6 @@ namespace finalPractice
 
 		resize(width, height);
 
-		angleAroundX   = angleDeltaX = 0.f;
-		angleAroundY   = angleDeltaY = 0.f;
 		pointerPressed = false;
 	}
 
@@ -28,31 +26,20 @@ namespace finalPractice
 
 	void Scene::update()
 	{
-		angleAroundX += angleDeltaX;
-		angleAroundY += angleDeltaY;
-
-		if (angleAroundX < -1.5f)
-			angleAroundX = -1.5f;			
-		else if (angleAroundX > +1.5f)
-			angleAroundX = +1.5f;
-
-		glm::mat4 cameraRotation(1);
-
-		cameraRotation = glm::rotate(cameraRotation, angleAroundY, glm::vec3(0.f, 1.f, 0.f));
-		cameraRotation = glm::rotate(cameraRotation, angleAroundX, glm::vec3(1.f, 0.f, 0.f));
-
-		camera.setTarget(0, 0, 1);
+		glm::vec3 cameraDirection(
+			cos(camera.getRotationX()) * sin(camera.getRotationY()),
+			sin(camera.getRotationX()),
+			cos(camera.getRotationX()) * cos(camera.getRotationY())
+		);
 		
-		camera.rotate   (cameraRotation);
+		glm::vec3 right = glm::normalize(glm::cross(cameraDirection, glm::vec3(0.f, 1.f, 0.f)));
 
-		glm::vec3 front = glm::normalize(camera.getTarget() - camera.getLocation());
-		glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.f, 1.f, 0.f)));
-		glm::vec3 up    = glm::normalize(glm::cross(right, front));
+		glm::vec3 up = glm::normalize(glm::cross(right, cameraDirection));
 
 		glm::vec3 movement(0.f);
 
-		if (keys[0]) movement += front * 0.005f;
-		if (keys[1]) movement -= front * 0.005f;
+		if (keys[0]) movement += cameraDirection * 0.005f;
+		if (keys[1]) movement -= cameraDirection * 0.005f;
 		if (keys[2]) movement -= right * 0.005f;
 		if (keys[3]) movement += right * 0.005f;
 
@@ -92,8 +79,13 @@ namespace finalPractice
 	{
 		if (pointerPressed)
 		{
-			angleDeltaX = 0.025f * float(lastPointerY - pointerY) / float(height);
-			angleDeltaY = 0.025f * float(lastPointerX - pointerX) / float( width);
+			float deltaX = (pointerX - lastPointerX) * 0.005f;
+			float deltaY = (pointerY - lastPointerY) * 0.005f;
+
+			camera.rotate(-deltaY, -deltaX);
+
+			lastPointerX = pointerX;
+			lastPointerY = pointerY;
 		}
 	}
 
@@ -105,8 +97,6 @@ namespace finalPractice
 			lastPointerY = pointerY;
 		}
 		else
-		{
 			angleDeltaX = angleDeltaY = 0.f;
-		}
 	}
 }

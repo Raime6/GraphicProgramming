@@ -32,7 +32,8 @@ namespace finalPractice
 			float				ratio;
 
 			Point            location;
-			Point              target;
+			float           rotationY;
+			float           rotationX;
 
 			Matrix44 projectionMatrix;
 
@@ -55,32 +56,35 @@ namespace finalPractice
 
 		public:
 
-			float		  getFov	 () const { return      fov; }
-			float		  getNearZ	 () const { return    nearZ; }
-			float		  getFarZ	 () const { return     farZ; }
-			float		  getRatio	 () const { return    ratio; }
+			float		  getFov	  () const { return          fov; }
+			float		  getNearZ	  () const { return        nearZ; }
+			float		  getFarZ	  () const { return         farZ; }
+			float		  getRatio    () const { return        ratio; }
+			float		  getRotationX() const { return    rotationX; }
+			float		  getRotationY() const { return    rotationY; }
 
 			const Point & getLocation() const { return location; }
-			const Point & getTarget  () const { return   target; }
 
 		public:
 
-			void setFov  (float   newFov) { fov   =   newFov; calculateProjectionMatrix(); }
-			void setNearZ(float newNearZ) { nearZ = newNearZ; calculateProjectionMatrix(); }
-			void setFarZ (float  newFarZ) { farZ  =  newFarZ; calculateProjectionMatrix(); }
-			void setRatio(float newRatio) { ratio = newRatio; calculateProjectionMatrix(); }
+			void setFov      (float       newFov) { fov       =       newFov; calculateProjectionMatrix(); }
+			void setNearZ    (float     newNearZ) { nearZ     =     newNearZ; calculateProjectionMatrix(); }
+			void setFarZ     (float      newFarZ) { farZ      =      newFarZ; calculateProjectionMatrix(); }
+			void setRatio    (float     newRatio) { ratio     =     newRatio; calculateProjectionMatrix(); }
+			void setRotationX(float newRotationX) { rotationX = newRotationX; calculateProjectionMatrix(); }
+			void setRotationY(float newRotationY) { rotationY = newRotationY; calculateProjectionMatrix(); }
 
 			void setLocation(float x, float y, float z) { location[0] = x; location[1] = y; location[2] = z; }
-			void setTarget  (float x, float y, float z) {   target[0] = x;   target[1] = y;   target[2] = z; }
 
 			void reset(float newFov, float newNearZ, float newFarZ, float newRatio)
 			{
-				setFov     (        newFov);
-				setNearZ   (      newNearZ);
-				setFarZ    (       newFarZ);
-				setRatio   (      newRatio);
-				setLocation(0.f, 0.f,  0.f);
-				setTarget  (0.f, 0.f, -1.f);
+				setFov      (       newFov);
+				setNearZ    (     newNearZ);
+				setFarZ     (      newFarZ);
+				setRatio    (     newRatio);
+				setLocation (0.f, 0.f, 0.f);
+				setRotationX(          0.f);
+				setRotationY(          0.f);
 				calculateProjectionMatrix();
 			}
 
@@ -89,12 +93,15 @@ namespace finalPractice
 			void move(const glm::vec3 & translation)
 			{
 				location += glm::vec4(translation, 1.f);
-				target   += glm::vec4(translation, 1.f);
 			}
 
-			void rotate(const glm::mat4 & rotation)
+			void rotate(float deltaRotationX, float deltaRotationY)
 			{
-				target = location + rotation * (target - location);
+				rotationY += deltaRotationY;
+				rotationX += deltaRotationX;
+
+				if (rotationX > glm::radians( 89.f)) rotationX = glm::radians( 89.f);
+				if (rotationX < glm::radians(-89.f)) rotationX = glm::radians(-89.f);
 			}
 
 		public:
@@ -106,12 +113,17 @@ namespace finalPractice
 
 			glm::mat4 getTransformMatrixInverse() const
 			{
-				return glm::lookAt
+				glm::vec3 direction
 				(
-					glm::vec3(location[0], location[1], location[2]),
-					glm::vec3(  target[0],   target[1],   target[2]),
-					glm::vec3(        0.f,         1.f,         0.f)
+					cos(rotationX) * sin(rotationY),
+					sin(rotationX),
+					cos(rotationX) * cos(rotationY)
 				);
+				
+				glm::vec3 right = glm::normalize(glm::cross(glm::vec3(0.f, 1.f, 0.f), direction));
+				glm::vec3 up    = glm::normalize(glm::cross(direction, right));
+				
+				return glm::lookAt(glm::vec3(location), glm::vec3(location) + direction, up);
 			}
 
 		private:
