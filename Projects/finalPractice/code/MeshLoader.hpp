@@ -38,11 +38,14 @@ namespace finalPractice
 
 		private:
 
-			static const std::string   vertexShaderCode;
-			static const std::string fragmentShaderCode;
+			static const std::string          vertexShaderCode;
+			static const std::string        fragmentShaderCode;
+			static const std::string   vertexShaderCodeTexture;
+			static const std::string fragmentShaderCodeTexture;
 
 			Shader			   shader;
 			Texture           texture;
+			//Texture     textureNormal;
 
 		private:
 
@@ -54,14 +57,17 @@ namespace finalPractice
 			GLint   modelViewMatrixID;
 			GLint  projectionMatrixID;
 
+			bool		  needTexture;
+
 		public:
 
-			MeshLoader(const std::string& meshFilePath, const std::string& texturePath);
+			MeshLoader(const std::string & meshFilePath);
+			MeshLoader(const std::string & meshFilePath, const std::string & textureAlbedoPath);
 		   ~MeshLoader();
 
 		public:
 
-			void render(const Camera & camera);
+			void render(const Camera & camera, glm::vec3 tanslateVector, glm::vec3 scaleVector);
 			void resize(int width, int height);
 
 		private:

@@ -9,12 +9,13 @@
 namespace finalPractice
 {
 	Scene::Scene(int width, int height) :
-		table  ("../../../assets/table.fbx", "../../../assets/table-texture.png"),
-		terrain(10.f, 10.f, 50, 50, "../../../assets/height-map.png")            ,
-		skybox ("../../../assets/skybox ")
+		table  ("../../../assets/table.fbx"  , "../../../assets/table_textureAlbedo.png"),
+		//capsule("../../../assets/capsule.fbx"),
+		terrain(10.f, 10.f, 50, 50, "../../../assets/height_map.png"),
+		skybox ("../../../assets/skybox_")
 	{
 		glEnable (GL_CULL_FACE);
-		glEnable(GL_DEPTH_TEST);
+		glEnable (GL_DEPTH_TEST);
 
 		resize(width, height);
 
@@ -40,17 +41,33 @@ namespace finalPractice
 		cameraRotation = glm::rotate(cameraRotation, angleAroundY, glm::vec3(0.f, 1.f, 0.f));
 		cameraRotation = glm::rotate(cameraRotation, angleAroundX, glm::vec3(1.f, 0.f, 0.f));
 
-		camera.setTarget(0, 0, -1);
+		camera.setTarget(0, 0, 1);
+		
 		camera.rotate   (cameraRotation);
 
-		terrain   .update();
+		glm::vec3 front = glm::normalize(camera.getTarget() - camera.getLocation());
+		glm::vec3 right = glm::normalize(glm::cross(front, glm::vec3(0.f, 1.f, 0.f)));
+		glm::vec3 up    = glm::normalize(glm::cross(right, front));
+
+		glm::vec3 movement(0.f);
+
+		if (keys[0]) movement += front * 0.005f;
+		if (keys[1]) movement -= front * 0.005f;
+		if (keys[2]) movement -= right * 0.005f;
+		if (keys[3]) movement += right * 0.005f;
+
+		camera.move(movement);
+
+		terrain.update();
 	}
 
 	void Scene::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-		table  .render(camera);
+		table  .render(camera, glm::vec3(0.f, -2.f, 0.f), glm::vec3(0.5f, 0.5f, 0.5f));
+		//capsule.render(camera, glm::vec3(0.f, 0.f, -1.f));
+
 		terrain.render(camera);
 		skybox .render(camera);
 	}
@@ -65,6 +82,7 @@ namespace finalPractice
 		camera.setRatio(float(width) / float(height));
 
 		table  .resize(newWidth, newHeight);
+		//capsule.resize(newWidth, newHeight);
 		terrain.resize(newWidth, newHeight);
 
 		glViewport(0, 0, width, height);
@@ -87,6 +105,8 @@ namespace finalPractice
 			lastPointerY = pointerY;
 		}
 		else
+		{
 			angleDeltaX = angleDeltaY = 0.f;
+		}
 	}
 }

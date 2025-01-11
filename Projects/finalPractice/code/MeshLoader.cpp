@@ -27,6 +27,36 @@ namespace finalPractice
         "uniform mat4 projection_matrix;"
         ""
         "layout (location = 0) in vec3 vertex_coordinates;"
+        "layout (location = 1) in vec3 vertex_color;"
+        ""
+        "out vec3 front_color;"
+        ""
+        "void main()"
+        "{"
+        "   gl_Position = projection_matrix * model_view_matrix * vec4(vertex_coordinates, 1.0);"
+        "   front_color = vertex_color;"
+        "}";
+
+    const std::string MeshLoader::fragmentShaderCode =
+
+        "#version 330\n"
+        ""
+        "in  vec3    front_color;"
+        "out vec4 fragment_color;"
+        ""
+        "void main()"
+        "{"
+        "    fragment_color = vec4(front_color, 1.0);"
+        "}";
+    
+    const std::string MeshLoader::vertexShaderCodeTexture =
+
+        "#version 330\n"
+        ""
+        "uniform mat4 model_view_matrix;"
+        "uniform mat4 projection_matrix;"
+        ""
+        "layout (location = 0) in vec3 vertex_coordinates;"
         "layout (location = 1) in vec2 vertex_texture_uv;"
         ""
         "out vec2 texture_uv;"
@@ -37,7 +67,7 @@ namespace finalPractice
         "   texture_uv  = vertex_texture_uv;"
         "}";
 
-    const std::string MeshLoader::fragmentShaderCode =
+    const std::string MeshLoader::fragmentShaderCodeTexture =
 
         "#version 330\n"
         ""
@@ -53,15 +83,28 @@ namespace finalPractice
 
 
 
-    MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
+    MeshLoader::MeshLoader(const std::string& meshFilePath) :
         shader(vertexShaderCode, fragmentShaderCode)
     {
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
+        needTexture = false;
+
+        loadMesh(meshFilePath);
+    }
+
+    MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
+        shader(vertexShaderCodeTexture, fragmentShaderCodeTexture)
+    {
+        modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
+        projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
+
+        needTexture = true;
+
         loadMesh(meshFilePath);
 
-        texture.setID(texture.createTexture2D< Rgba8888 >(texturePath));
+        texture.setID(texture.createTexture2D< Rgba8888 >(texturePath, Texture::TypeTexture2D::ALBEDO));
         assert(texture.isOk());
     }
 
@@ -73,13 +116,14 @@ namespace finalPractice
 
 
 
-    void MeshLoader::render(const Camera & camera)
+    void MeshLoader::render(const Camera & camera, glm::vec3 tanslateVector, glm::vec3 scaleVector)
     {
         shader.Use();
 
         glm::mat4 modelViewMatrix(1);
 
-        modelViewMatrix = glm::translate(modelViewMatrix, glm::vec3(0.f, -3.5f, -4.f));
+        modelViewMatrix = glm::translate(modelViewMatrix, tanslateVector);
+        modelViewMatrix = glm::scale    (modelViewMatrix,    scaleVector);
 
         modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
 
@@ -133,6 +177,21 @@ namespace finalPractice
 
             if (not mesh->HasTextureCoords(0))
                 std::cerr << "Mesh doesn't have UV coordinates" << std::endl;
+            else if (not needTexture)
+            {
+                std::vector< glm::vec3 > vertex_colors(numVertex);
+
+                for (auto& color : vertex_colors)
+                {
+                    color = glm::vec3(1.f, 1.f, 1.f);
+                }
+
+                glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
+                glBufferData(GL_ARRAY_BUFFER, vertex_colors.size() * sizeof(glm::vec3), vertex_colors.data(), GL_STATIC_DRAW);
+
+                glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+            }
             else
             {
                 std::vector< glm::vec2 > textureCoords(mesh->mNumVertices);
@@ -149,8 +208,8 @@ namespace finalPractice
                 glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
                 glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), textureCoords.data(), GL_STATIC_DRAW);
 
-                glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
                 glEnableVertexAttribArray(1);
+                glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
             }
 
             numIndex = mesh->mNumFaces * 3;

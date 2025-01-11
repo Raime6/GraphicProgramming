@@ -26,6 +26,7 @@ namespace finalPractice
 
 			Camera		   camera;
 			MeshLoader      table;
+			//MeshLoader    capsule;
 			Skybox		   skybox;
 			Terrain       terrain;
 
@@ -40,6 +41,9 @@ namespace finalPractice
 			bool   pointerPressed;
 			int	     lastPointerX;
 			int      lastPointerY;
+
+		public:
+			bool keys[4] = { false, false, false, false };
 
 		public:
 

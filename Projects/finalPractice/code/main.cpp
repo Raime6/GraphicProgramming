@@ -81,9 +81,28 @@ int main(int, char* [])
 					break;
 				}
 
+				case SDL_KEYDOWN:
+				{
+					if (event.key.keysym.sym == SDLK_w) scene.keys[0] = true;
+					if (event.key.keysym.sym == SDLK_s) scene.keys[1] = true;
+					if (event.key.keysym.sym == SDLK_a) scene.keys[2] = true;
+					if (event.key.keysym.sym == SDLK_d) scene.keys[3] = true;
+					break;
+				}
+
+				case SDL_KEYUP:
+				{
+					if (event.key.keysym.sym == SDLK_w) scene.keys[0] = false;
+					if (event.key.keysym.sym == SDLK_s) scene.keys[1] = false;
+					if (event.key.keysym.sym == SDLK_a) scene.keys[2] = false;
+					if (event.key.keysym.sym == SDLK_d) scene.keys[3] = false;
+					break;
+				}
+
 				case SDL_QUIT:
 				{
 					exit = true;
+					break;
 				}
 			}
 		}

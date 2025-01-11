@@ -27,7 +27,11 @@ namespace finalPractice
 {
 	class Texture
 	{
-		enum TypeTexture{ NO_TYPE, TEXTURE2D, CUBEMAP };
+		private:
+			enum TypeTexture   { NO_TYPE, TEXTURE2D, CUBEMAP   };
+
+		public:
+			enum TypeTexture2D { ALBEDO , NORMAL   , HEIGHTMAP };
 
 		private:
 
@@ -98,7 +102,7 @@ namespace finalPractice
 		public:
 
 			template< typename COLOR_FORMAT >
-			GLuint createTexture2D(const std::string& texturePath)
+			GLuint createTexture2D(const std::string& texturePath, TypeTexture2D texture2DType)
 			{
 				auto image = loadImage< COLOR_FORMAT >(texturePath);
 
@@ -115,18 +119,36 @@ namespace finalPractice
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 					glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-					glTexImage2D
-					(
-						GL_TEXTURE_2D,
-						0,
-						GL_RGBA,
-						image->getWidth(),
-						image->getHeight(),
-						0,
-						GL_RGBA,
-						GL_UNSIGNED_BYTE,
-						image->colors()
-					);
+					if (texture2DType == ALBEDO)
+					{
+						glTexImage2D
+						(
+							GL_TEXTURE_2D,
+							0,
+							GL_RGBA,
+							image->getWidth(),
+							image->getHeight(),
+							0,
+							GL_RGBA,
+							GL_UNSIGNED_BYTE,
+							image->colors()
+						);
+					}
+					else if (texture2DType == HEIGHTMAP)
+					{
+						glTexImage2D
+						(
+							GL_TEXTURE_2D,
+							0,
+							GL_R8,
+							image->getWidth(),
+							image->getHeight(),
+							0,
+							GL_RED,
+							GL_UNSIGNED_BYTE,
+							image->colors()
+						);
+					}
 
 					glGenerateMipmap(GL_TEXTURE_2D);
 
