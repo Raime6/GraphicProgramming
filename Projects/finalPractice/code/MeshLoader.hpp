@@ -12,6 +12,7 @@
 
 
 #include "Camera.hpp"
+#include "Lighting.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
 
@@ -32,6 +33,7 @@ namespace finalPractice
 			{
 				VBO_COORDINATES,
 				VBO_COLORS,
+				VBO_NORMALS,
 				EBO_INDEX,
 				VBO_COUNT
 			};
@@ -44,6 +46,7 @@ namespace finalPractice
 			static const std::string fragmentShaderCodeTexture;
 
 			Shader			   shader;
+			Lighting	     lighting;
 			Texture           texture;
 			//Texture     textureNormal;
 
@@ -56,6 +59,7 @@ namespace finalPractice
 
 			GLint   modelViewMatrixID;
 			GLint  projectionMatrixID;
+			GLint      normalMatrixID;
 
 			bool		  needTexture;
 			bool			 moveDown;
@@ -80,6 +84,7 @@ namespace finalPractice
 		private:
 
 			void loadMesh(const std::string & meshFilePath);
+			void configureMaterial(GLuint shaderID);
 
 			void crystalAnimation();
 	};

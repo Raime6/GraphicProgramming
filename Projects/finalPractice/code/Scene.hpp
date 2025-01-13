@@ -25,9 +25,13 @@ namespace finalPractice
 	private:
 
 		Camera		   camera;
+
 		MeshLoader      table;
 		MeshLoader    beerMug;
 		MeshLoader    crystal;
+		MeshLoader      chair;
+		//MeshLoader   fishBowl;
+
 		Skybox		   skybox;
 		Terrain       terrain;
 

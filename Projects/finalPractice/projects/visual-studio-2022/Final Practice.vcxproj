@@ -136,7 +136,9 @@
     <ClInclude Include="..\..\code\Camera.hpp" />
     <ClInclude Include="..\..\code\Color.hpp" />
     <ClInclude Include="..\..\code\ColorBuffer.hpp" />
+    <ClInclude Include="..\..\code\Lighting.hpp" />
     <ClInclude Include="..\..\code\MeshLoader.hpp" />
+    <ClInclude Include="..\..\code\Postprocess.hpp" />
     <ClInclude Include="..\..\code\Scene.hpp" />
     <ClInclude Include="..\..\code\Shader.hpp" />
     <ClInclude Include="..\..\code\Skybox.hpp" />
@@ -145,8 +147,10 @@
     <ClInclude Include="..\..\code\Window.hpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\code\Lighting.cpp" />
     <ClCompile Include="..\..\code\main.cpp" />
     <ClCompile Include="..\..\code\MeshLoader.cpp" />
+    <ClCompile Include="..\..\code\Postprocess.cpp" />
     <ClCompile Include="..\..\code\Scene.cpp" />
     <ClCompile Include="..\..\code\Shader.cpp" />
     <ClCompile Include="..\..\code\Skybox.cpp" />

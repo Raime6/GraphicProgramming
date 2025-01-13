@@ -23,18 +23,37 @@ namespace finalPractice
 
         "#version 330\n"
         ""
+        "struct Light"
+        "{"
+        "    vec4 position;"
+        "    vec3 color;"
+        "};"
+        ""
+        "uniform Light light;"
+        "uniform float ambient_intensity;"
+        "uniform float diffuse_intensity;"
+        ""
+        "uniform vec3 material_color;"
+        ""
         "uniform mat4 model_view_matrix;"
         "uniform mat4 projection_matrix;"
+        "uniform mat4 normal_matrix;"
         ""
         "layout (location = 0) in vec3 vertex_coordinates;"
-        "layout (location = 1) in vec3 vertex_color;"
+        "layout (location = 2) in vec3 vertex_normal;"
         ""
         "out vec3 front_color;"
         ""
         "void main()"
         "{"
-        "   gl_Position = projection_matrix * model_view_matrix * vec4(vertex_coordinates, 1.0);"
-        "   front_color = vertex_color;"
+        "    vec4 normal   = normal_matrix * vec4(vertex_normal, 0.0);"
+        "    vec4 position = model_view_matrix * vec4(vertex_coordinates, 1.0);"
+        ""
+        "    vec4  light_direction = light.position - position;"
+        "    float light_intensity = diffuse_intensity * max(dot(normalize(normal.xyz), normalize(light_direction.xyz)), 0.0);"
+        ""
+        "    gl_Position = projection_matrix * position;"
+        "    front_color = material_color * ambient_intensity + diffuse_intensity * light_intensity * light.color * material_color;"
         "}";
 
     const std::string MeshLoader::fragmentShaderCode =
@@ -53,17 +72,35 @@ namespace finalPractice
 
         "#version 330\n"
         ""
+        "struct Light"
+        "{"
+        "    vec4 position;"
+        "    vec3 color;"
+        "};"
+        ""
+        "uniform Light light;"
+        "uniform float ambient_intensity;"
+        "uniform float diffuse_intensity;"
+        ""
         "uniform mat4 model_view_matrix;"
         "uniform mat4 projection_matrix;"
+        "uniform mat4 normal_matrix;"
         ""
         "layout (location = 0) in vec3 vertex_coordinates;"
         "layout (location = 1) in vec2 vertex_texture_uv;"
+        "layout (location = 2) in vec3 vertex_normal;"
         ""
         "out vec2 texture_uv;"
         ""
         "void main()"
         "{"
-        "   gl_Position = projection_matrix * model_view_matrix * vec4(vertex_coordinates, 1.0);"
+        "    vec4 normal   = normal_matrix * vec4(vertex_normal, 0.0);"
+        "    vec4 position = model_view_matrix * vec4(vertex_coordinates, 1.0);"
+        ""
+        "    vec4  light_direction = light.position - position;"
+        "    float light_intensity = diffuse_intensity * max(dot(normalize(normal.xyz), normalize(light_direction.xyz)), 0.0);"
+        ""
+        "   gl_Position = projection_matrix * position;"
         "   texture_uv  = vertex_texture_uv;"
         "}";
 
@@ -89,11 +126,16 @@ namespace finalPractice
         posY (0),
         moveDown(false)
     {
+        shader.Use();
+
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
+        normalMatrixID     = glGetUniformLocation(shader.getID(), "normal_matrix"    );
 
         needTexture = false;
         loadMesh(meshFilePath);
+
+        lighting.configureLight(shader.getID());
     }
 
     MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
@@ -104,12 +146,15 @@ namespace finalPractice
     {
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
+        normalMatrixID     = glGetUniformLocation(shader.getID(), "normal_matrix"    );
 
         needTexture = true;
         loadMesh(meshFilePath);
 
         texture.setID(texture.createTexture2D< Rgba8888 >(texturePath, Texture::TypeTexture2D::ALBEDO));
         assert(texture.isOk());
+
+        lighting.configureLight(shader.getID());
     }
 
     MeshLoader::~MeshLoader()
@@ -139,7 +184,8 @@ namespace finalPractice
 
         glUniformMatrix4fv(modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
 
-        texture.bind();
+        if (needTexture)
+            texture.bind();
 
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, numIndex, GL_UNSIGNED_SHORT, 0);
@@ -199,7 +245,7 @@ namespace finalPractice
                 std::cerr << "Mesh doesn't have UV coordinates" << std::endl;
             else if (not needTexture)
             {
-                std::vector< glm::vec3 > vertex_colors(numVertex);
+                /*std::vector< glm::vec3 > vertex_colors(numVertex);
 
                 for (auto& color : vertex_colors)
                 {
@@ -210,7 +256,8 @@ namespace finalPractice
                 glBufferData(GL_ARRAY_BUFFER, vertex_colors.size() * sizeof(glm::vec3), vertex_colors.data(), GL_STATIC_DRAW);
 
                 glEnableVertexAttribArray(1);
-                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);
+                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);*/
+                configureMaterial(shader.getID());
             }
             else
             {
@@ -230,6 +277,22 @@ namespace finalPractice
 
                 glEnableVertexAttribArray(1);
                 glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+            }
+
+            if (not mesh->HasNormals())
+                std::cerr << "Mesh doesn't have normals" << std::endl;
+            else
+            {
+                std::vector< glm::vec3 > normals(numVertex);
+
+                for (unsigned i = 0; i < numVertex; ++i)
+                    normals[i] = glm::vec3(mesh->mNormals[i].x, mesh->mNormals[i].y, mesh->mNormals[i].z);
+
+                glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_NORMALS]);
+                glBufferData(GL_ARRAY_BUFFER, normals.size() * sizeof(glm::vec3), normals.data(), GL_STATIC_DRAW);
+
+                glEnableVertexAttribArray(2);
+                glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
             }
 
             numIndex = mesh->mNumFaces * 3;
@@ -253,6 +316,15 @@ namespace finalPractice
             glBufferData(GL_ELEMENT_ARRAY_BUFFER, index.size() * sizeof(GLshort), index.data(), GL_STATIC_DRAW);
         }
     }
+
+    void MeshLoader::configureMaterial(GLuint shaderID)
+    {
+        GLint materialColor = glGetUniformLocation(shaderID, "material_color");
+        
+        glUniform3f(materialColor, 0.f, 1.f, 0.f);
+    }
+
+
 
     void MeshLoader::crystalAnimation()
     {

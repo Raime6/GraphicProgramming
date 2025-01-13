@@ -9,14 +9,16 @@
 namespace finalPractice
 {
 	Scene::Scene(int width, int height) :
-		table  ("../../../assets/table.fbx"  , "../../../assets/table_textureAlbedo.png"  ),
+		table("../../../assets/table.fbx", "../../../assets/table_textureAlbedo.png"),
 		beerMug("../../../assets/beerMug.fbx", "../../../assets/beerMug_textureAlbedo.png"),
-		crystal("../../../assets/crystal.fbx" , "../../../assets/crystal_textureAlbedo.png" ),
+		crystal("../../../assets/crystal.fbx", "../../../assets/crystal_textureAlbedo.png"),
+		chair("../../../assets/chair.fbx", "../../../assets/chair_textureAlbedo.png"),
+		//fishBowl("../../../assets/fishBowl.fbx"),
 		terrain(10.f, 10.f, 50, 50, "../../../assets/height_map.png"),
-		skybox ("../../../assets/skybox_")
+		skybox("../../../assets/skybox_")
 	{
-		glEnable (GL_CULL_FACE);
-		glEnable (GL_DEPTH_TEST);
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_TEST);
 
 		resize(width, height);
 
@@ -32,9 +34,9 @@ namespace finalPractice
 			sin(camera.getRotationX()),
 			cos(camera.getRotationX()) * cos(camera.getRotationY())
 		);
-		
+
 		glm::vec3 right = glm::normalize(glm::cross(cameraDirection, glm::vec3(0.f, 1.f, 0.f)));
-		glm::vec3 up    = glm::normalize(glm::cross(right, cameraDirection));
+		glm::vec3 up = glm::normalize(glm::cross(right, cameraDirection));
 
 		glm::vec3 movement(0.f);
 
@@ -52,26 +54,31 @@ namespace finalPractice
 	void Scene::render()
 	{
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-		table  .render(camera, glm::vec3(0.f, -2.f,  0.f),              0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.5f, 0.5f, 0.5f));
-		beerMug.render(camera, glm::vec3(0.f,  0.f, -1.f),             -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f   ));
-		crystal.render(camera, glm::vec3(0.f, crystal.getPosY(),  0.f), crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f));
+
+		table.render(camera, glm::vec3(0.f, -2.f, 0.f), 0.f, glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.5f, 0.5f, 0.5f));
+		beerMug.render(camera, glm::vec3(0.f, 0.f, -1.f), -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(1.f, 1.f, 1.f));
+		crystal.render(camera, glm::vec3(0.f, crystal.getPosY(), 0.f), crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f));
+		chair.render(camera, glm::vec3(0.f, -1.f, 0.f), 0.f, glm::vec3(1.f, 1.f, 1.f), glm::vec3(1.f, 1.f, 1.f));
+		//fishBowl.render(camera, glm::vec3(0.f, 0.f, 0.f), 0.f, glm::vec3(1.f, 1.f, 1.f), glm::vec3(2.f, 2.f, 2.f));
 
 		terrain.render(camera);
-		skybox .render(camera);
+		skybox.render(camera);
 	}
 
 
 
 	void Scene::resize(int newWidth, int newHeight)
 	{
-		width  =  newWidth;
+		width = newWidth;
 		height = newHeight;
 
 		camera.setRatio(float(width) / float(height));
 
-		table  .resize(newWidth, newHeight);
+		table.resize(newWidth, newHeight);
 		beerMug.resize(newWidth, newHeight);
 		crystal.resize(newWidth, newHeight);
+		chair.resize(newWidth, newHeight);
+		//fishBowl.resize(newWidth, newHeight);
 
 		terrain.resize(newWidth, newHeight);
 
