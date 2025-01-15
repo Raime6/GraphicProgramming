@@ -23,6 +23,7 @@
 
 
 #include <glad/glad.h>
+#include <glm.hpp>
 #include <string>
 
 
@@ -65,15 +66,16 @@ namespace finalPractice
 
 			GLuint  vboIDs[VBO_COUNT];							///< IDs for the vertex buffer objects.
 			GLuint				vaoID;							///< ID for the vertex array object.
-			
+
 			GLsizei			 numIndex;							///< Number of indices for rendering.
-			
+
 			GLint   modelViewMatrixID;							///< ID for the model-view matrix uniform.
 			GLint  projectionMatrixID;							///< ID for the projection matrix uniform.
 			GLint      normalMatrixID;							///< ID for the normal matrix uniform.
 
 			bool		  needTexture;							///< Flag indicating whether the mesh requires a texture.
 			bool			 moveDown;							///< Flag for animating movement downwards.
+			float		 transparency;							///< Current transparency of the mesh (0f - 1f).
 			float				angle;							///< Current rotation angle of the mesh.
 			float				 posY;							///< Current vertical position of the mesh.
 
@@ -84,20 +86,20 @@ namespace finalPractice
 			/// </summary>
 			/// 
 			/// <param name="meshFilePath">The file path to the mesh to be loaded.</param>
-			MeshLoader(const std::string & meshFilePath);
-			
+			MeshLoader(const std::string& meshFilePath, float _transparency);
+
 			/// <summary>
 			/// Constructor that loads the mesh and applies a texture from a file path.
 			/// </summary>
 			/// 
 			/// <param name="meshFilePath">The file path to the mesh to be loaded.</param>
 			/// <param name="textureAlbedoPath">The file path to the texture (albedo).</param>
-			MeshLoader(const std::string & meshFilePath, const std::string & textureAlbedoPath);
+			MeshLoader(const std::string& meshFilePath, const std::string& textureAlbedoPath, float _transparency);
 
 			/// <summary>
 			/// Destructor that cleans up OpenGL resources.
 			/// </summary>
-		   ~MeshLoader();
+			~MeshLoader();
 
 		public:
 
@@ -105,7 +107,7 @@ namespace finalPractice
 			/// Updates the mesh, including any animations.
 			/// </summary>
 			void  update();
-			
+
 			/// <summary>
 			/// Renders the mesh with the specified transformations and camera.
 			/// </summary>
@@ -116,7 +118,7 @@ namespace finalPractice
 			/// <param name="rotateVector">The axis of rotation for the mesh.</param>
 			/// <param name="scaleVector">The scaling vector for the mesh.</param>
 			void  render(const Camera& camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector);
-			
+
 			/// <summary>
 			/// Resizes the viewport and updates the projection matrix.
 			/// </summary>
@@ -125,7 +127,7 @@ namespace finalPractice
 			/// <param name="height">New height of the viewport.</param>
 			void  resize(int width, int height);
 
-			
+
 
 			/// <summary>
 			/// Gets the current angle of the mesh.
@@ -139,7 +141,7 @@ namespace finalPractice
 			/// </summary>
 			/// 
 			/// <returns>The current vertical position of the mesh.</returns>
-			float getPosY ();
+			float getPosY();
 
 		private:
 
@@ -148,7 +150,7 @@ namespace finalPractice
 			/// </summary>
 			/// 
 			/// <param name="meshFilePath">The file path to the mesh to be loaded.</param>
-			void loadMesh(const std::string & meshFilePath);
+			void loadMesh(const std::string& meshFilePath);
 
 			/// <summary>
 			/// Sets a color for the mesh (Used on non-textured meshes).

@@ -13,7 +13,6 @@
 #include <assimp/Importer.hpp>
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
-#include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
 #include <gtc/type_ptr.hpp>
 #include <iostream>
@@ -66,12 +65,14 @@ namespace finalPractice
 
         "#version 330\n"
         ""
+        "uniform float transparency;"
+        ""
         "in  vec3    front_color;"
         "out vec4 fragment_color;"
         ""
         "void main()"
         "{"
-        "    fragment_color = vec4(front_color, 1.0);"
+        "    fragment_color = vec4(front_color, 1.0) * transparency;"
         "}";
     
     // Vertex shader code for rendering with lighting and textures
@@ -107,8 +108,8 @@ namespace finalPractice
         "    vec4  light_direction = light.position - position;"
         "    float light_intensity = diffuse_intensity * max(dot(normalize(normal.xyz), normalize(light_direction.xyz)), 0.0);"
         ""
-        "   gl_Position = projection_matrix * position;"
-        "   texture_uv  = vertex_texture_uv;"
+        "    gl_Position = projection_matrix * position;"
+        "    texture_uv  = vertex_texture_uv;"
         "}";
 
     // Fragment shader code to define color with textures
@@ -116,24 +117,27 @@ namespace finalPractice
 
         "#version 330\n"
         ""
-        "uniform sampler2D sampler;"
+        "uniform sampler2D      sampler;"
+        "uniform float     transparency;"
         ""
         "in  vec2     texture_uv;"
         "out vec4 fragment_color;"
         ""
         "void main()"
         "{"
-        "    fragment_color = texture(sampler, texture_uv);"
+        "    vec4 texColor = texture(sampler, texture_uv);"
+        "    fragment_color = vec4(texColor.rgb, texColor.a * transparency);"
         "}";
 
 
 
     // MeshLoader constructor for mesh without texture
-    MeshLoader::MeshLoader(const std::string& meshFilePath) :
+    MeshLoader::MeshLoader(const std::string& meshFilePath, float _transparency) :
         shader(vertexShaderCode, fragmentShaderCode),
         angle(0),
         posY (0),
-        moveDown(false)
+        moveDown(false),
+        transparency(_transparency)
     {
         shader.use();
 
@@ -149,12 +153,15 @@ namespace finalPractice
     }
 
     // MeshLoader constructor for mesh with texture
-    MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
+    MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath, float _transparency) :
         shader(vertexShaderCodeTexture, fragmentShaderCodeTexture),
         angle(0),
-        posY (0),
-        moveDown(false)
+        posY (.1f),
+        moveDown(false),
+        transparency(_transparency)
     {
+        shader.use();
+
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
         normalMatrixID     = glGetUniformLocation(shader.getID(), "normal_matrix"    );
@@ -185,6 +192,13 @@ namespace finalPractice
     
     void MeshLoader::render(const Camera & camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector)
     {
+        if (transparency < 1.f)
+        {
+            glDepthMask(GL_FALSE);
+            glEnable(GL_BLEND);
+            glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        }
+
         shader.use();
 
         glm::mat4 modelViewMatrix(1);
@@ -196,13 +210,22 @@ namespace finalPractice
 
         modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
 
-        glUniformMatrix4fv(modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+        glUniformMatrix4fv(modelViewMatrixID , 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+        glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 
         if (needTexture)
             texture.bind();
 
+        glUniform1f(glGetUniformLocation(shader.getID(), "transparency"), transparency);
+
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, numIndex, GL_UNSIGNED_SHORT, 0);
+
+        if(transparency < 1.f)
+        {
+            glDisable(GL_BLEND);
+            glDepthMask(GL_TRUE);
+        }
     }
 
     void MeshLoader::resize(int width, int height)
@@ -328,7 +351,7 @@ namespace finalPractice
     {
         GLint materialColor = glGetUniformLocation(shaderID, "material_color");
         
-        glUniform3f(materialColor, 0.f, 1.f, 0.f); // Green color
+        glUniform3f(materialColor, 1.f, 1.f, 1.f); // White color
     }
 
 
@@ -343,7 +366,7 @@ namespace finalPractice
         {
             posY -= 0.001f;
 
-            if (posY <= -0.2f)
+            if (posY <= -.1f)
                 moveDown = false;
         }
         else if (not moveDown)

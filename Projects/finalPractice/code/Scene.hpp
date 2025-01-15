@@ -36,8 +36,11 @@ namespace finalPractice
 		Camera           camera;								///< The camera used for the scene's view.
 
 		MeshLoader        table;								///< Mesh loader for the table model.
-		MeshLoader      beerMug;								///< Mesh loader for the beer mug model.
-		MeshLoader        chair;								///< Mesh loader for the chair model.
+		MeshLoader    beerMug01;								///< Mesh loader for the beer mug model.
+		MeshLoader    beerMug02;								///< Mesh loader for the beer mug model.
+		MeshLoader    beerMug03;								///< Mesh loader for the beer mug model.
+		MeshLoader      chair01;								///< Mesh loader for the chair model.
+		MeshLoader      chair02;								///< Mesh loader for the chair model.
 		MeshLoader     fishBowl;								///< Mesh loader for the fishbowl model.
 		MeshLoader      crystal;								///< Mesh loader for the crystal model.
 
