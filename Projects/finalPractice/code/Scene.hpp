@@ -37,9 +37,9 @@ namespace finalPractice
 
 		MeshLoader        table;								///< Mesh loader for the table model.
 		MeshLoader      beerMug;								///< Mesh loader for the beer mug model.
-		MeshLoader      crystal;								///< Mesh loader for the crystal model.
-		MeshLoader     fishBowl;								///< Mesh loader for the fishbowl model.
 		MeshLoader        chair;								///< Mesh loader for the chair model.
+		MeshLoader     fishBowl;								///< Mesh loader for the fishbowl model.
+		MeshLoader      crystal;								///< Mesh loader for the crystal model.
 
 		Skybox           skybox;								///< The skybox for the scene.
 		Terrain         terrain;								///< The terrain for the scene.

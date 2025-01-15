@@ -15,9 +15,9 @@ namespace finalPractice
 	Scene::Scene(int width, int height) :
 		table      ("../../binaries/assets/table.fbx"  , "../../binaries/assets/table_textureAlbedo.png"  ),
 		beerMug    ("../../binaries/assets/beerMug.fbx", "../../binaries/assets/beerMug_textureAlbedo.png"),
-		crystal    ("../../binaries/assets/crystal.fbx", "../../binaries/assets/crystal_textureAlbedo.png"),
-		fishBowl   ("../../binaries/assets/fishBowl.fbx"),
 		chair      ("../../binaries/assets/chair.fbx"  , "../../binaries/assets/chair_textureAlbedo.png"  ),
+		fishBowl   ("../../binaries/assets/fishBowl.fbx"),
+		crystal    ("../../binaries/assets/crystal.fbx", "../../binaries/assets/crystal_textureAlbedo.png"),
 		terrain    (10.f, 10.f, 50, 50, "../../binaries/assets/height_map.png"),
 		skybox     ("../../binaries/assets/skybox_"),
 		postprocess(width, height)
@@ -63,11 +63,11 @@ namespace finalPractice
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 		// Render the meshes
-		table   .render(camera, glm::vec3(0.f, -2.f, 0.f),                           0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.5f, 0.5f, 0.5f));
-		beerMug .render(camera, glm::vec3(0.f, 0.f, -1.f),                          -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(1.f , 1.f , 1.f ));
-		crystal .render(camera, glm::vec3(0.f, crystal.getPosY(), 0.f), crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f));
-		fishBowl.render(camera, glm::vec3(0.f, 0.f, 0.f),                            0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(2.f , 2.f , 2.f ));
-		chair   .render(camera, glm::vec3(0.f, -1.f, 0.f),                           0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(1.f , 1.f , 1.f ));
+		table   .render(camera, glm::vec3(0.f, -2.f,  0.f),                           0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(0.5f, 0.5f, 0.5f));
+		beerMug .render(camera, glm::vec3(0.f,  0.f, -1.f),                          -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(1.f , 1.f , 1.f ));
+		chair   .render(camera, glm::vec3(0.f, -1.f,  0.f),                           0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(1.f , 1.f , 1.f ));
+		fishBowl.render(camera, glm::vec3(0.f,  0.f,  0.f),                           0.f  , glm::vec3(1.f, 1.f, 1.f), glm::vec3(2.f , 2.f , 2.f ));
+		crystal .render(camera, glm::vec3(0.f, crystal.getPosY(), 0.f),  crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.3f, 0.3f, 0.3f));
 
 		// Render the rest of the scene's components
 		terrain.render(camera);
@@ -89,9 +89,9 @@ namespace finalPractice
 		// Resize meshes
 		table   .resize(newWidth, newHeight);
 		beerMug .resize(newWidth, newHeight);
-		crystal .resize(newWidth, newHeight);
-		fishBowl.resize(newWidth, newHeight);
 		chair   .resize(newWidth, newHeight);
+		fishBowl.resize(newWidth, newHeight);
+		crystal .resize(newWidth, newHeight);
 
 		// Resize the rest of the scene's components
 		terrain.resize(newWidth, newHeight);
