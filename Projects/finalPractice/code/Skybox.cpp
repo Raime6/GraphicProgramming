@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+	Public Domain Code
+
+	Author: Xavier Canals
+	Author: Ángel Rodríguez
+*/
 
 #include "Skybox.hpp"
 
@@ -90,12 +94,15 @@ namespace finalPractice
 	Skybox::Skybox(const std::string & texturePath) :
 		shader(vertexShaderCode, fragmentShaderCode)
 	{
+		// Load the cube map texture
 		texture.setID(texture.createTextureCubeMap< Rgba8888 >(texturePath));
 		assert(texture.isOk());
 
+		// Get the location of uniform variables in the shader
 		modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
 		projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 		
+		// Generate buffers and arrays for the skybox
 		glGenBuffers     (1, &vboID);
 		glGenVertexArrays(1, &vaoID);
 
@@ -120,21 +127,26 @@ namespace finalPractice
 
 	void Skybox::render(const Camera & camera)
 	{
-		shader.Use();
+		shader.use();
 
 		texture.bind();
 
+		// Get the inverse of the camera's transform matrix and the projection matrix
 		const glm::mat4   modelViewMatrix  = camera.getTransformMatrixInverse();
 		const glm::mat4 & projectionMatrix = camera.getProjectionMatrix();
 
+		// Set the uniform variables in the shader
 		glUniformMatrix4fv( modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
 		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
+		// Disable depth writing (skybox should not affect depth buffer)
 		glDepthMask       (GL_FALSE);
 
+		// Bind the vertex array and render the skybox
 		glBindVertexArray (vaoID);
 		glDrawArrays      (GL_TRIANGLES, 0, 36);
 
+		// Re-enable depth writing
 		glDepthMask       (GL_TRUE);
 
 		glBindVertexArray (0);

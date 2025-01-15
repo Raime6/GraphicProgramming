@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+	Public Domain Code
+
+	Author: Xavier Canals
+	Author: Ángel Rodríguez
+*/
 
 #pragma once
 
@@ -18,11 +22,14 @@ using finalPractice::Window;
 
 int main(int, char* [])
 {
-	constexpr unsigned  viewportWidth  = 1024;
-	constexpr unsigned  viewportHeight =  576;
+	constexpr unsigned   viewportWidth = 1024; ///< Viewport width.
+	constexpr unsigned  viewportHeight =  576; ///< Viewport height.
 
 
 
+	/// <summary>
+	/// Creates a SDL window with the specified dimensions.
+	/// </summary>
 	Window window
 	(
 		"Final Practice"      ,
@@ -33,15 +40,20 @@ int main(int, char* [])
 		{ 3, 3 }
 	);
 
+	/// <summary>
+	/// Creates the scene which will manage all 3D elements.
+	/// </summary>
 	Scene scene(viewportWidth, viewportHeight);
 
 
 
-	int  mouseX     = 0;
-	int  mouseY     = 0;
-	bool buttonDown = false;
-	bool exit       = false;
+	// Camera management variables
+	int  mouseX     =     0;				  ///< Mouse's X position.
+	int  mouseY     =     0;				  ///< Mouse's Y position.
+	bool buttonDown = false;				  ///< Indicates if Mouse's left button is pressed
+	bool exit       = false;				  ///< Indicates if the program needs to be closed
 
+	// Main program's loop
 	do
 	{
 		SDL_Event event;
@@ -50,29 +62,31 @@ int main(int, char* [])
 		{
 			switch (event.type)
 			{
-				case SDL_MOUSEBUTTONDOWN:
+				case SDL_MOUSEBUTTONDOWN:									  // If Mouse's left button is pressed
 				{
 					auto buttons  = SDL_GetMouseState(&mouseX, &mouseY);
 					auto leftDown = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
 
+					// If this action has not been already processed, it processes it
 					if (leftDown && not buttonDown)
 						scene.onClick(mouseX, mouseY, buttonDown = true);
 
 					break;
 				}
 
-				case SDL_MOUSEBUTTONUP:
+				case SDL_MOUSEBUTTONUP:										  // If Mouse's left button is released
 				{
 					auto buttons  = SDL_GetMouseState(&mouseX, &mouseY);
 					auto leftDown = buttons & SDL_BUTTON(SDL_BUTTON_LEFT);
 
+					// If Mouse's left button was pressed, it processes it
 					if (not leftDown && buttonDown)
 						scene.onClick(mouseX, mouseY, buttonDown = false);
 
 					break;
 				}
 
-				case SDL_MOUSEMOTION:
+				case SDL_MOUSEMOTION:										  // If Mouseir moving, updates position and drag
 				{
 					SDL_GetMouseState(&mouseX, &mouseY);
 
@@ -81,7 +95,7 @@ int main(int, char* [])
 					break;
 				}
 
-				case SDL_KEYDOWN:
+				case SDL_KEYDOWN:											  // If a Keyboard key is pressed
 				{
 					if (event.key.keysym.sym == SDLK_w) scene.keys[0] = true;
 					if (event.key.keysym.sym == SDLK_s) scene.keys[1] = true;
@@ -90,7 +104,7 @@ int main(int, char* [])
 					break;
 				}
 
-				case SDL_KEYUP:
+				case SDL_KEYUP:												  // If a Keyboard key is released
 				{
 					if (event.key.keysym.sym == SDLK_w) scene.keys[0] = false;
 					if (event.key.keysym.sym == SDLK_s) scene.keys[1] = false;
@@ -99,7 +113,7 @@ int main(int, char* [])
 					break;
 				}
 
-				case SDL_QUIT:
+				case SDL_QUIT:												  // If User closes the window, ends main loop
 				{
 					exit = true;
 					break;
@@ -107,15 +121,27 @@ int main(int, char* [])
 			}
 		}
 
+		/// <summary>
+		/// Update the scene (including any animations or interactions).
+		/// </summary>
 		scene.update();
 
+		/// <summary>
+		/// Render the scene.
+		/// </summary>
 		scene.render();
 
+		/// <summary>
+		/// Swap the buffers (display the updated frame).
+		/// </summary>
 		window.swapBuffers();
 	} while (not exit);
 
 
 
+	/// <summary>
+	/// Clean up and close the SDL library.
+	/// </summary>
 	SDL_Quit();
 
 	return 0;

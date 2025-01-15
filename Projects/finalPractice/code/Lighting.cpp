@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+	Public Domain Code
+
+	Author: Xavier Canals
+	Author: Ángel Rodríguez
+*/
 
 #include "Lighting.hpp"
 
@@ -19,11 +23,13 @@ namespace finalPractice
 
 	void Lighting::configureLight(GLuint shaderID)
 	{
+		// Gets the uniform attributes of the light in the shader
 		GLint lightPositionLoc    = glGetUniformLocation(shaderID, "light.position"   );
 		GLint lightColorLoc       = glGetUniformLocation(shaderID, "light.color"      );
 		GLint ambientIntensityLoc = glGetUniformLocation(shaderID, "ambient_intensity");
 		GLint diffuseIntensityLoc = glGetUniformLocation(shaderID, "diffuse_intensity");
 
+		// Sets the uniform values in the shader program.
 		glUniform4f(lightPositionLoc   , lightPosition.x, lightPosition.y, lightPosition.z, lightPosition.w);
 		glUniform3f(lightColorLoc      , lightColor.x   , lightColor.y   , lightColor.z);
 		glUniform1f(ambientIntensityLoc, ambientIntensity);

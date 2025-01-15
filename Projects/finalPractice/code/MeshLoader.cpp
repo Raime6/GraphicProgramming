@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+    Public Domain Code
+
+    Author: Xavier Canals
+    Author: Ángel Rodríguez
+*/
 
 #include "MeshLoader.hpp"
 
@@ -19,6 +23,7 @@
 
 namespace finalPractice
 {
+    // Vertex shader code for rendering the mesh with lighting but without textures
     const std::string MeshLoader::vertexShaderCode =
 
         "#version 330\n"
@@ -56,6 +61,7 @@ namespace finalPractice
         "    front_color = material_color * ambient_intensity + diffuse_intensity * light_intensity * light.color * material_color;"
         "}";
 
+    // Fragment shader code to define color without textures
     const std::string MeshLoader::fragmentShaderCode =
 
         "#version 330\n"
@@ -68,6 +74,7 @@ namespace finalPractice
         "    fragment_color = vec4(front_color, 1.0);"
         "}";
     
+    // Vertex shader code for rendering with lighting and textures
     const std::string MeshLoader::vertexShaderCodeTexture =
 
         "#version 330\n"
@@ -104,6 +111,7 @@ namespace finalPractice
         "   texture_uv  = vertex_texture_uv;"
         "}";
 
+    // Fragment shader code to define color with textures
     const std::string MeshLoader::fragmentShaderCodeTexture =
 
         "#version 330\n"
@@ -120,24 +128,27 @@ namespace finalPractice
 
 
 
+    // MeshLoader constructor for mesh without texture
     MeshLoader::MeshLoader(const std::string& meshFilePath) :
         shader(vertexShaderCode, fragmentShaderCode),
         angle(0),
         posY (0),
         moveDown(false)
     {
-        shader.Use();
+        shader.use();
 
         modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
         normalMatrixID     = glGetUniformLocation(shader.getID(), "normal_matrix"    );
 
-        needTexture = false;
-        loadMesh(meshFilePath);
+        needTexture = false;                                                            // Indicates that the mesh doesn't need a texture
+        
+        loadMesh(meshFilePath);                                                         // Load the mesh
 
-        lighting.configureLight(shader.getID());
+        lighting.configureLight(shader.getID());                                        // Sets the lighting that will affect the mesh
     }
 
+    // MeshLoader constructor for mesh with texture
     MeshLoader::MeshLoader(const std::string& meshFilePath, const std::string& texturePath) :
         shader(vertexShaderCodeTexture, fragmentShaderCodeTexture),
         angle(0),
@@ -148,13 +159,15 @@ namespace finalPractice
         projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
         normalMatrixID     = glGetUniformLocation(shader.getID(), "normal_matrix"    );
 
-        needTexture = true;
-        loadMesh(meshFilePath);
+        needTexture = true;                                                             // Indicates that the mesh needs a texture
 
+        loadMesh(meshFilePath);                                                         // Load the mesh
+
+        // Sets the texture (albedo) for the mesh
         texture.setID(texture.createTexture2D< Rgba8888 >(texturePath, Texture::TypeTexture2D::ALBEDO));
         assert(texture.isOk());
 
-        lighting.configureLight(shader.getID());
+        lighting.configureLight(shader.getID());                                        // Sets the lighting that will affect the mesh
     }
 
     MeshLoader::~MeshLoader()
@@ -167,15 +180,16 @@ namespace finalPractice
 
     void MeshLoader::update()
     {
-        crystalAnimation();
+        crystalAnimation(); // Crystal animation (Used in Scene.cpp by the crystal mesh)
     }
     
     void MeshLoader::render(const Camera & camera, glm::vec3 tanslateVector, float angle, glm::vec3 rotateVector, glm::vec3 scaleVector)
     {
-        shader.Use();
+        shader.use();
 
         glm::mat4 modelViewMatrix(1);
 
+        // Sets the mesh's transform values
         modelViewMatrix = glm::translate(modelViewMatrix,      tanslateVector);
         modelViewMatrix = glm::rotate   (modelViewMatrix, angle, rotateVector);
         modelViewMatrix = glm::scale    (modelViewMatrix,         scaleVector);
@@ -214,7 +228,7 @@ namespace finalPractice
     {
         Assimp::Importer importer;
 
-        shader.Use();
+        shader.use();
 
         auto scene = importer.ReadFile
         (
@@ -226,8 +240,6 @@ namespace finalPractice
         {
             auto mesh = scene->mMeshes[0];
 
-            size_t numVertex = mesh->mNumVertices;
-
             glGenBuffers(VBO_COUNT, vboIDs);
             glGenVertexArrays(1, &vaoID);
 
@@ -235,32 +247,24 @@ namespace finalPractice
 
             static_assert(sizeof(aiVector3D) == sizeof(glm::fvec3), "aiVector3D should composed of three floats");
 
+            // MESH VERTEX COORDINATES
+            size_t numVertex = mesh->mNumVertices;
             glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COORDINATES]);
             glBufferData(GL_ARRAY_BUFFER, numVertex * sizeof(aiVector3D), mesh->mVertices, GL_STATIC_DRAW);
 
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            if (not mesh->HasTextureCoords(0))
+            // MESH VERTEX COLORS
+            if (not mesh->HasTextureCoords(0)) // ERROR condition
                 std::cerr << "Mesh doesn't have UV coordinates" << std::endl;
-            else if (not needTexture)
+            else if (not needTexture)          // If the mesh don't need texture, sets a color (RGB)
             {
-                /*std::vector< glm::vec3 > vertex_colors(numVertex);
-
-                for (auto& color : vertex_colors)
-                {
-                    color = glm::vec3(.3f, .3f, .3f);
-                }
-
-                glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
-                glBufferData(GL_ARRAY_BUFFER, vertex_colors.size() * sizeof(glm::vec3), vertex_colors.data(), GL_STATIC_DRAW);
-
-                glEnableVertexAttribArray(1);
-                glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 0, 0);*/
                 configureMaterial(shader.getID());
             }
-            else
+            else                               // If the mesh needs a texture
             {
+                // Sets the mesh color based on its texture coordinates
                 std::vector< glm::vec2 > textureCoords(mesh->mNumVertices);
 
                 for (unsigned i = 0; i < mesh->mNumVertices; ++i)
@@ -279,10 +283,12 @@ namespace finalPractice
                 glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
             }
 
-            if (not mesh->HasNormals())
+            // MESH VERTEX NORMALS
+            if (not mesh->HasNormals()) // ERROR condition
                 std::cerr << "Mesh doesn't have normals" << std::endl;
             else
             {
+                // Sets the mesh normals
                 std::vector< glm::vec3 > normals(numVertex);
 
                 for (unsigned i = 0; i < numVertex; ++i)
@@ -295,6 +301,7 @@ namespace finalPractice
                 glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, 0, 0);
             }
 
+            // MESH INDEXES
             numIndex = mesh->mNumFaces * 3;
 
             std::vector< GLshort > index(numIndex);
@@ -321,15 +328,17 @@ namespace finalPractice
     {
         GLint materialColor = glGetUniformLocation(shaderID, "material_color");
         
-        glUniform3f(materialColor, 0.f, 1.f, 0.f);
+        glUniform3f(materialColor, 0.f, 1.f, 0.f); // Green color
     }
 
 
 
     void MeshLoader::crystalAnimation()
     {
+        // Rotation
         angle += 0.01f;
 
+        // Floating effect
         if (moveDown)
         {
             posY -= 0.001f;

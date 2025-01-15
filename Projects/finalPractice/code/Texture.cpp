@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+	Public Domain Code
+
+	Author: Xavier Canals
+	Author: Ángel Rodríguez
+*/
 
 #include "Texture.hpp"
 

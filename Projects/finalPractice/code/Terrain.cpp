@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+	Public Domain Code
+
+	Author: Xavier Canals
+	Author: Ángel Rodríguez
+*/
 
 #include "Terrain.hpp"
 
@@ -76,6 +80,7 @@ namespace finalPractice
 
 		int coordinateIndex = 0;
 
+		// Fill the vertex coordinates and texture UVs
 		for (unsigned i = 0; i < zSlices; ++i, z += zStep, v += vStep)
 		{
 			for (unsigned j = 0; j < xSlices; ++j, coordinateIndex += 2, x += xStep, u += uStep)
@@ -95,12 +100,14 @@ namespace finalPractice
 
 		glBindVertexArray(vaoID);
 
+		// TERRAIN COORDINATES
 		glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COORDINATES]);
 		glBufferData(GL_ARRAY_BUFFER, coordinates.size() * sizeof(half_float::half), coordinates.data(), GL_STATIC_DRAW);
 
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(0, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
 
+		// TERRAIN TEXTURE UVS
 		glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_TEXTURE_UVS]);
 		glBufferData(GL_ARRAY_BUFFER, textureUVs.size() * sizeof(half_float::half), textureUVs.data(), GL_STATIC_DRAW);
 
@@ -109,9 +116,11 @@ namespace finalPractice
 
 		glBindVertexArray(0);
 
+		// Get the location of shader uniforms
 		modelViewMatrixID  = glGetUniformLocation(shader.getID(), "model_view_matrix");
 		projectionMatrixID = glGetUniformLocation(shader.getID(), "projection_matrix");
 
+		// Set max height uniform
 		glUniform1f(glGetUniformLocation(shader.getID(), "max_height"), 5.f);
 
 
@@ -119,6 +128,7 @@ namespace finalPractice
 		/*texture.setID(texture.createTexture2D< Monochrome8 >(texturePath));
 		assert(texture.isOk());*/
 
+		// Resize the terrain based on the default window size
 		resize(1024, 576);
 	}
 
@@ -139,7 +149,7 @@ namespace finalPractice
 
 	void Terrain::render(const Camera & camera)
 	{
-		shader.Use();
+		shader.use();
 
 		glm::mat4 modelViewMatrix(1);
 

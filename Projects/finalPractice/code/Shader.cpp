@@ -1,6 +1,10 @@
 
-// Public Domain Code
-// Author: Xavier Canals
+/*
+	Public Domain Code
+
+	Author: Xavier Canals
+	Author: Ángel Rodríguez
+*/
 
 #include "Shader.hpp"
 
@@ -24,7 +28,7 @@ namespace finalPractice
 
 
 
-	void Shader::Use()
+	void Shader::use()
 	{
 		glUseProgram(shaderID);
 	}
@@ -40,20 +44,24 @@ namespace finalPractice
 	{
 		GLint succeeded = GL_FALSE;
 
+		// Create the vertex and fragment shader objects
 		GLuint   vertexShaderId = glCreateShader(GL_VERTEX_SHADER);
 		GLuint fragmentShaderId = glCreateShader(GL_FRAGMENT_SHADER);
 
+		// Set the shader source code
 		const char *   vertexShadersCode[] = {         vertexShaderCode.c_str() };
 		const char * fragmentShadersCode[] = {       fragmentShaderCode.c_str() };
 		const GLint    vertexShadersSize[] = { (GLint)  vertexShaderCode.size() };
 		const GLint  fragmentShadersSize[] = { (GLint)fragmentShaderCode.size() };
 
+		// Compile the shaders
 		glShaderSource(  vertexShaderId, 1,   vertexShadersCode,   vertexShadersSize);
 		glShaderSource(fragmentShaderId, 1, fragmentShadersCode, fragmentShadersSize);
 
 		glCompileShader(  vertexShaderId);
 		glCompileShader(fragmentShaderId);
 
+		// Check for compilation errors
 		glGetShaderiv(vertexShaderId, GL_COMPILE_STATUS, &succeeded);
 		if (!succeeded)
 			showCompilationError(vertexShaderId);
@@ -62,17 +70,21 @@ namespace finalPractice
 		if (!succeeded)
 			showCompilationError(fragmentShaderId);
 
+		// Create the shader program and attach the shaders
 		GLuint programID = glCreateProgram();
 
 		glAttachShader(programID,   vertexShaderId);
 		glAttachShader(programID, fragmentShaderId);
 
+		// Link the program
 		glLinkProgram(programID);
 
+		// Check for linkage errors
 		glGetShaderiv(programID, GL_LINK_STATUS, &succeeded);
 		if (not succeeded)
 			showLinkageError(programID);
 
+		// Clean up the shader objects as they are no longer needed
 		glDeleteShader(  vertexShaderId);
 		glDeleteShader(fragmentShaderId);
 
