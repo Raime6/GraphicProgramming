@@ -104,12 +104,12 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libraries/sdl/include;../../libraries/glad/include;../../libraries/glm/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../../libraries/glad/lib/windows/visual-studio-2022/static-x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../libraries/glad/lib/windows/visual-studio-2022/static-x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2-staticd.lib;SDL2maind.lib;gladd.lib;imm32.lib;setupapi.lib;version.lib;winmm.lib;opengl32.lib;$(CoreLibraryDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
@@ -121,14 +121,14 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>NDEBUG;_WINDOWS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
-      <AdditionalIncludeDirectories>../../../libraries/sdl/include;../../../libraries/glad/include;../../../libraries/glm/include</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>../../libraries/sdl/include;../../libraries/glad/include;../../libraries/glm/include</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>../../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../../libraries/glad/lib/windows/visual-studio-2022/static-x64</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>../../libraries/sdl/lib/windows/visual-studio-2022/static-x64;../../libraries/glad/lib/windows/visual-studio-2022/static-x64</AdditionalLibraryDirectories>
       <AdditionalDependencies>SDL2-static.lib;SDL2main.lib;glad.lib;imm32.lib;setupapi.lib;version.lib;winmm.lib;opengl32.lib</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
