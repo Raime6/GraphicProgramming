@@ -132,12 +132,16 @@ namespace finalPractice
 		texture.bind();
 
 		// Get the inverse of the camera's transform matrix and the projection matrix
-		const glm::mat4   modelViewMatrix  = camera.getTransformMatrixInverse();
+		glm::mat4   modelViewMatrix  = camera.getTransformMatrixInverse();
 		const glm::mat4 & projectionMatrix = camera.getProjectionMatrix();
+
+		modelViewMatrix = glm::rotate   (modelViewMatrix, .6f, glm::vec3(0.f, 1.f, 0.f));
+		modelViewMatrix = glm::translate(modelViewMatrix,      glm::vec3(-15.f, 0.f, 20.f));
+		modelViewMatrix = glm::scale    (modelViewMatrix,      glm::vec3( 5.f, 5.f,  5.f));
 
 		// Set the uniform variables in the shader
 		glUniformMatrix4fv( modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
+		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 
 		// Disable depth writing (skybox should not affect depth buffer)
 		glDepthMask       (GL_FALSE);

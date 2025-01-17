@@ -40,14 +40,14 @@ namespace finalPractice
 		/// <summary>
 		/// Enumeration for texture types.
 		/// </summary>
-		enum TypeTexture { NO_TYPE, TEXTURE2D, CUBEMAP };
+		enum TypeTexture { NO_TYPE, TEXTURE2D, TEXTURECUBEMAP };
 
 	public:
 
 		/// <summary>
 		/// Enumeration for different 2D texture types.
 		/// </summary>
-		enum TypeTexture2D { ALBEDO, NORMAL, HEIGHTMAP };
+		enum TypeTexture2D { ALBEDO, NORMAL, HEIGHTMAP, CUBEMAP };
 
 	private:
 
@@ -113,21 +113,37 @@ namespace finalPractice
 		/// 
 		/// <returns>A unique pointer to the loaded ColorBuffer object, or nullptr if loading failed.</returns>
 		template< typename COLOR_FORMAT >
-		std::unique_ptr< ColorBuffer< COLOR_FORMAT > > loadImage(const std::string& imagePath)
+		std::unique_ptr< ColorBuffer< COLOR_FORMAT > > loadImage(const std::string& imagePath, TypeTexture2D texture2DType)
 		{
 			{
-				int imageWidth = 0;
-				int imageHeight = 0;
+				int imageWidth    = 0;
+				int imageHeight   = 0;
 				int imageChannels = 0;
 
-				uint8_t* loadedPixels = SOIL_load_image
-				(
-					imagePath.c_str(),
-					&imageWidth,
-					&imageHeight,
-					&imageChannels,
-					SOIL_LOAD_RGBA
-				);
+				uint8_t* loadedPixels;
+
+				if (texture2DType == HEIGHTMAP)
+				{
+					loadedPixels = SOIL_load_image
+					(
+						imagePath.c_str(),
+						&imageWidth,
+						&imageHeight,
+						&imageChannels,
+						SOIL_LOAD_L
+					);
+				}
+				else
+				{
+					loadedPixels = SOIL_load_image
+					(
+						imagePath.c_str(),
+						&imageWidth,
+						&imageHeight,
+						&imageChannels,
+						SOIL_LOAD_RGBA
+					);
+				}
 
 				if (loadedPixels)
 				{
@@ -166,7 +182,7 @@ namespace finalPractice
 		template< typename COLOR_FORMAT >
 		GLuint createTexture2D(const std::string& texturePath, TypeTexture2D texture2DType)
 		{
-			auto image = loadImage< COLOR_FORMAT >(texturePath);
+			auto image = loadImage< COLOR_FORMAT >(texturePath, texture2DType);
 
 			if (image)
 			{
@@ -242,7 +258,7 @@ namespace finalPractice
 			// Load each side of the cubemap
 			for (size_t i = 0; i < 6; ++i)
 			{
-				textureSides[i] = loadImage< COLOR_FORMAT >(texturePath + char('0' + i) + ".png");
+				textureSides[i] = loadImage< COLOR_FORMAT >(texturePath + char('0' + i) + ".png", CUBEMAP);
 
 				if (!textureSides[i])
 					return -1;
@@ -293,7 +309,7 @@ namespace finalPractice
 			}
 
 			textureIsLoaded = true;
-			type = CUBEMAP;
+			type = TEXTURECUBEMAP;
 
 			return textureID;
 		}

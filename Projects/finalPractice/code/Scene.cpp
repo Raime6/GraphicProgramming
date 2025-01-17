@@ -21,7 +21,7 @@ namespace finalPractice
 		chair02    ("../../binaries/assets/chair.fbx"  , "../../binaries/assets/chair_textureAlbedo.png",   1.f ),
 		fishBowl   ("../../binaries/assets/fishBowl.fbx", .5f),
 		crystal    ("../../binaries/assets/crystal.fbx", "../../binaries/assets/crystal_textureAlbedo.png",  .8f),
-		terrain    (10.f, 10.f, 50, 50, "../../binaries/assets/height_map.png"),
+		terrain    (20.f, 20.f, 100, 100, "../../binaries/assets/height_map.png"),
 		skybox     ("../../binaries/assets/skybox_"),
 		postprocess(width, height)
 	{
@@ -49,16 +49,15 @@ namespace finalPractice
 
 		glm::vec3 movement(0.f);
 
-		if (keys[0]) movement += cameraDirection * 0.005f;
-		if (keys[1]) movement -= cameraDirection * 0.005f;
-		if (keys[2]) movement -= right * 0.005f;
-		if (keys[3]) movement += right * 0.005f;
+		if (keys[0]) movement += cameraDirection * 0.01f;
+		if (keys[1]) movement -= cameraDirection * 0.01f;
+		if (keys[2]) movement -= right * 0.01f;
+		if (keys[3]) movement += right * 0.01f;
 
 		camera.move(movement);
 
 		// Animation update
 		crystal.update();
-		terrain.update();
 	}
 
 	void Scene::render()

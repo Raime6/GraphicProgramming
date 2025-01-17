@@ -23,6 +23,10 @@
 
 
 
+#include <half.hpp>
+
+
+
 namespace finalPractice
 {
 	/// <summary>
@@ -40,6 +44,7 @@ namespace finalPractice
 		{
 			VBO_COORDINATES,								///< Vertex coordinates VBO
 			VBO_TEXTURE_UVS,								///< Texture coordinates (UVs)VBO.
+			EBO_INDEX,										///< Triangle index EBO
 			VBO_COUNT										///< Total number of VBOs
 		};
 
@@ -48,6 +53,10 @@ namespace finalPractice
 		static const std::string   vertexShaderCode;		///< Vertex shader code for terrain rendering.
 		static const std::string fragmentShaderCode;		///< Fragment shader code for terrain rendering.
 		static const std::string        texturePath;		///< Path to the terrain texture.
+
+		std::vector<half_float::half> coordinates;			///< Coordinates of the terrain vertex.
+		std::vector<half_float::half> textureUVs;			///< UV texture coordinates.
+		std::vector<GLuint> index;							///< Index for the terrain triangles.
 
 		Shader             shader;							///< Shader used to render the terrain.
 		Texture           texture;							///< Texture for the terrain.
@@ -63,10 +72,6 @@ namespace finalPractice
 
 		GLint	modelViewMatrixID;							///< Location of the model-view matrix in the shader.
 		GLint  projectionMatrixID;							///< Location of the projection matrix in the shader.
-
-	private:
-
-		float               angle;							///< Rotation angle of the terrain.
 
 	public:
 
@@ -85,13 +90,6 @@ namespace finalPractice
 		/// Destructor to clean up OpenGL resources used by the terrain.
 		/// </summary>
 		~Terrain();
-
-
-
-		/// <summary>
-		/// Updates the terrain, including any dynamic properties such as rotation.
-		/// </summary>
-		void update();
 
 
 

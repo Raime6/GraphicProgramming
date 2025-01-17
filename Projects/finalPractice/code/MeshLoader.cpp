@@ -220,7 +220,7 @@ namespace finalPractice
 
         glBindVertexArray(vaoID);
         glDrawElements(GL_TRIANGLES, numIndex, GL_UNSIGNED_SHORT, 0);
-
+        
         if(transparency < 1.f)
         {
             glDisable(GL_BLEND);

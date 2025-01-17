@@ -38,7 +38,7 @@ namespace finalPractice
 		""
 		"void main()"
 		"{"
-		"   float sample = 0.0;"
+		"   float sample = texture (sampler, vertex_uv).r;"
 		"   intensity    = sample * 0.75 + 0.25;"
 		"   float height = sample * max_height;"
 		"   vec4  xyzw   = vec4(vertex_xz.x, height, vertex_xz.y, 1.0);"
@@ -54,19 +54,21 @@ namespace finalPractice
 		""
 		"void main()"
 		"{"
-		"    fragment_color = vec4(1.0, 1.0, 1.0, 1.0);"
+		"    fragment_color = vec4(intensity, intensity, intensity, 1.0);"
 		"}";
 
 
 
 	Terrain::Terrain(float width, float depth, unsigned xSlices, unsigned zSlices, const std::string& texturePath) :
-		shader(vertexShaderCode, fragmentShaderCode),
-		angle(0.f)
+		shader(vertexShaderCode, fragmentShaderCode)
 	{
+		shader.use();
+
 		numVertex = xSlices * zSlices;
 
-		std::vector< half_float::half > coordinates(numVertex * 2);
-		std::vector< half_float::half > textureUVs (numVertex * 2);
+		coordinates.resize(numVertex * 2);
+		textureUVs .resize(numVertex * 2);
+		index      .resize(xSlices * zSlices * 6);
 		
 		float x = -width * .5f;
 		float z = -depth * .5f;
@@ -95,6 +97,30 @@ namespace finalPractice
 			u += uStep = -uStep;
 		}
 
+		int indexIndex = 0;
+
+		// Fill the triangles index
+		for (unsigned i = 0; i < zSlices; ++i)
+		{
+			for (unsigned j = 0; j < xSlices; ++j)
+			{
+				GLuint bottomLeft  =  i      * (xSlices + 1) +  j;
+				GLuint bottomRight =  i      * (xSlices + 1) + (j + 1);
+				GLuint topLeft     = (i + 1) * (xSlices + 1) +  j;
+				GLuint topRight    = (i + 1) * (xSlices + 1) + (j + 1);
+
+				// Primer triángulo
+				index[indexIndex++] = bottomLeft;
+				index[indexIndex++] = topLeft;
+				index[indexIndex++] = bottomRight;
+
+				// Segundo triángulo
+				index[indexIndex++] = bottomRight;
+				index[indexIndex++] = topLeft;
+				index[indexIndex++] = topRight;
+			}
+		}
+
 		glGenBuffers(VBO_COUNT, vboIDs);
 		glGenVertexArrays(1, &vaoID);
 
@@ -114,6 +140,10 @@ namespace finalPractice
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(1, 2, GL_HALF_FLOAT, GL_FALSE, 0, 0);
 
+		// TERRAIN TRIANGLES INDEX
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vboIDs[EBO_INDEX]);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, index.size() * sizeof(GLuint), index.data(), GL_STATIC_DRAW);
+
 		glBindVertexArray(0);
 
 		// Get the location of shader uniforms
@@ -125,8 +155,8 @@ namespace finalPractice
 
 
 
-		/*texture.setID(texture.createTexture2D< Monochrome8 >(texturePath));
-		assert(texture.isOk());*/
+		texture.setID(texture.createTexture2D< Monochrome8 >(texturePath, Texture::TypeTexture2D::HEIGHTMAP));
+		assert(texture.isOk());
 
 		// Resize the terrain based on the default window size
 		resize(1024, 576);
@@ -140,29 +170,26 @@ namespace finalPractice
 
 
 
-	void Terrain::update()
-	{
-		angle += 0.005f;
-	}
-
-
-
 	void Terrain::render(const Camera & camera)
 	{
 		shader.use();
 
 		glm::mat4 modelViewMatrix(1);
 
-		modelViewMatrix = glm::translate(modelViewMatrix,        glm::vec3(0.f, 0.f, -30.f));
-		modelViewMatrix = glm::rotate   (modelViewMatrix,   .4f, glm::vec3(1.f, 0.f,   0.f));
-		modelViewMatrix = glm::rotate   (modelViewMatrix, angle, glm::vec3(0.f, 1.f,   0.f));
+		modelViewMatrix = glm::rotate   (modelViewMatrix, .6f, glm::vec3(0.f, 1.f, 0.f));
+		modelViewMatrix = glm::translate(modelViewMatrix,      glm::vec3(-15.f, -3.6f  , 20.f));
+		modelViewMatrix = glm::scale    (modelViewMatrix,      glm::vec3( 2.5f,  2.5f ,  2.5f));
 
-		glUniformMatrix4fv(modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+		modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
+
+		glUniformMatrix4fv(modelViewMatrixID,  1, GL_FALSE, glm::value_ptr(modelViewMatrix));
+		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
 
 		texture.bind();
 
 		glBindVertexArray(vaoID);
-		glDrawArrays(GL_LINE_STRIP, 0, numVertex);
+		//glDrawArrays(GL_LINE_STRIP, 0, numVertex);
+		glDrawElements(GL_TRIANGLES, static_cast< GLsizei >(index.size()), GL_UNSIGNED_INT, 0);
 		glBindVertexArray(0);
 	}
 
