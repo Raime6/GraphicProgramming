@@ -3,7 +3,6 @@
 	Public Domain Code
 
 	Author: Xavier Canals
-	Author: Ángel Rodríguez
 */
 
 #include "Window.hpp"
