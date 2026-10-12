@@ -22,8 +22,8 @@
 namespace finalPractice
 {
 	/// <summary>
-	/// The Lighting class represents a simple lighting model with ambient and diffuse lighting components.
-	/// It manages the light position, color, and intensities for use in a shader program.
+	/// The Lighting class stores the parameters of the point light used by the
+	/// Blinn-Phong shaders.
 	/// </summary>
 	class Lighting
 	{
@@ -34,6 +34,11 @@ namespace finalPractice
 		
 		float	  ambientIntensity; ///< The intensity of the ambient light (between 0 and 1).
 		float	  diffuseIntensity; ///< The intensity of the diffuse light (between 0 and 1).
+		float	 specularIntensity; ///< The intensity of the specular light (between 0 and 1).
+
+		float attenuationConstant; ///< Constant attenuation term.
+		float   attenuationLinear; ///< Linear attenuation term.
+		float attenuationQuadratic; ///< Quadratic attenuation term.
 
 	public:
 		
@@ -46,8 +51,9 @@ namespace finalPractice
 		/// Configures the lighting parameters in the given shader program by setting uniform values.
 		/// </summary>
 		/// 
-		/// <param name="shaderID">The ID of the shader program to configure the light parameters for.</param>
-		void configureLight(GLuint shaderID);
+		/// <param name="shaderID">The ID of the shader program to configure.</param>
+		/// <param name="viewMatrix">View matrix used to place the light in view space.</param>
+		void configureLight(GLuint shaderID, const glm::mat4& viewMatrix) const;
 	};
 }
 

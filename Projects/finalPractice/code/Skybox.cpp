@@ -71,7 +71,8 @@ namespace finalPractice
 		"void main()"
 		"{"
 		"   texture_coordinates = vec3(vertex_coordinates.x, -vertex_coordinates.y, vertex_coordinates.z);"
-		"   gl_Position = projection_matrix * model_view_matrix * vec4(vertex_coordinates, 1.0);"
+		"   vec4 clip_position = projection_matrix * model_view_matrix * vec4(vertex_coordinates, 1.0);"
+		"   gl_Position = clip_position.xyww;"
 		"}";
 
 	const std::string Skybox::fragmentShaderCode =
@@ -130,27 +131,29 @@ namespace finalPractice
 
 		texture.bind();
 
-		// Get the inverse of the camera's transform matrix and the projection matrix
-		glm::mat4   modelViewMatrix  = camera.getTransformMatrixInverse();
+		// Remove the camera translation so the skybox remains centered on the
+		// camera while still following its rotation.
+		glm::mat4 modelViewMatrix = glm::mat4(glm::mat3(camera.getTransformMatrixInverse()));
 		const glm::mat4 & projectionMatrix = camera.getProjectionMatrix();
 
-		modelViewMatrix = glm::rotate   (modelViewMatrix, .6f, glm::vec3(0.f, 1.f, 0.f));
-		modelViewMatrix = glm::translate(modelViewMatrix,      glm::vec3(-15.f, 0.f, 20.f));
-		modelViewMatrix = glm::scale    (modelViewMatrix,      glm::vec3( 5.f, 5.f,  5.f));
+		modelViewMatrix = glm::rotate(modelViewMatrix, .6f, glm::vec3(0.f, 1.f, 0.f));
 
 		// Set the uniform variables in the shader
 		glUniformMatrix4fv( modelViewMatrixID, 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
-		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
+		glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(projectionMatrix));
 
-		// Disable depth writing (skybox should not affect depth buffer)
-		glDepthMask       (GL_FALSE);
+		// The vertex shader places the skybox at the far plane. GL_LEQUAL lets it
+		// fill untouched pixels without covering any scene geometry.
+		glDepthMask(GL_FALSE);
+		glDepthFunc(GL_LEQUAL);
 
 		// Bind the vertex array and render the skybox
 		glBindVertexArray (vaoID);
 		glDrawArrays      (GL_TRIANGLES, 0, 36);
 
-		// Re-enable depth writing
-		glDepthMask       (GL_TRUE);
+		// Restore the default depth state for subsequent transparent meshes.
+		glDepthFunc(GL_LESS);
+		glDepthMask(GL_TRUE);
 
 		glBindVertexArray (0);
 	}

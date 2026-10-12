@@ -152,7 +152,7 @@ namespace finalPractice
 			void loadMesh(const std::string& meshFilePath);
 
 			/// <summary>
-			/// Sets a color for the mesh (Used on non-textured meshes).
+			/// Sets the Blinn-Phong material coefficients for the mesh.
 			/// </summary>
 			/// 
 			/// <param name="shaderID">The ID of the shader program.</param>

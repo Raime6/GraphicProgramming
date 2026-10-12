@@ -20,7 +20,16 @@ namespace finalPractice
 		chair02    ("../../binaries/assets/chair.fbx"  , "../../binaries/assets/chair_textureAlbedo.png",   1.f ),
 		fishBowl   ("../../binaries/assets/fishBowl.fbx", .5f),
 		crystal    ("../../binaries/assets/crystal.fbx", "../../binaries/assets/crystal_textureAlbedo.png",  .8f),
-		terrain    (20.f, 20.f, 100, 100, "../../binaries/assets/height_map.png"),
+		terrain
+		(
+			20.f,
+			20.f,
+			100,
+			100,
+			"../../binaries/assets/height_map.png",
+			"../../binaries/assets/terrain_grass_albedo.png",
+			"../../binaries/assets/terrain_rock_albedo.png"
+		),
 		skybox     ("../../binaries/assets/skybox_"),
 		postprocess(width, height)
 	{
@@ -71,13 +80,16 @@ namespace finalPractice
 		chair01  .render(camera, glm::vec3(-1.f , -2.05f, 1.f) ,  2.5f , glm::vec3(0.f, 1.f, 0.f), glm::vec3(2.2f, 2.2f, 2.2f));
 		chair02  .render(camera, glm::vec3( 1.f , -2.05f, 1.f) , -2.5f , glm::vec3(0.f, 1.f, 0.f), glm::vec3(2.2f, 2.2f, 2.2f));
 		
-		// Transparency meshes
-		fishBowl.render(camera, glm::vec3(0.f, -.22f, 0.f), -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(2.f, 2.f, 2.f));
-		crystal .render(camera, glm::vec3(0.f, crystal.getPosY(), 0.f),  crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f));
-
-		// Render the rest of the scene's components
+		// Render all opaque geometry first so it fills the depth buffer.
 		terrain.render(camera);
+
+		// The skybox provides the background without writing to the depth buffer.
 		skybox .render(camera);
+
+		// Render transparent meshes last. The crystal is inside the fishbowl, so
+		// it must be blended before the bowl's front surface.
+		crystal .render(camera, glm::vec3(0.f, crystal.getPosY(), 0.f),  crystal.getAngle(), glm::vec3(0.f, 1.f, 0.f), glm::vec3(0.2f, 0.2f, 0.2f));
+		fishBowl.render(camera, glm::vec3(0.f, -.22f, 0.f), -1.57f, glm::vec3(1.f, 0.f, 0.f), glm::vec3(2.f, 2.f, 2.f));
 
 		// Render a postprocess (not working)
 		//postprocess.renderFramebuffer();

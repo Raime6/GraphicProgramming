@@ -192,8 +192,11 @@ namespace finalPractice
 				glBindTexture(GL_TEXTURE_2D, textureID);
 
 				// Set texture parameters
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+				// Albedo textures may be tiled across a surface, while height maps
+				// must keep their border values when sampled at the edge.
+				const GLint wrapMode = texture2DType == HEIGHTMAP ? GL_CLAMP_TO_EDGE : GL_REPEAT;
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, wrapMode);
+				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, wrapMode);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR_MIPMAP_LINEAR);
 				glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

@@ -17,6 +17,7 @@
 #include "Camera.hpp"
 #include "Color.hpp"
 #include "ColorBuffer.hpp"
+#include "Lighting.hpp"
 #include "Shader.hpp"
 #include "Texture.hpp"
 
@@ -51,14 +52,15 @@ namespace finalPractice
 
 		static const std::string   vertexShaderCode;		///< Vertex shader code for terrain rendering.
 		static const std::string fragmentShaderCode;		///< Fragment shader code for terrain rendering.
-		static const std::string        texturePath;		///< Path to the terrain texture.
-
 		std::vector<half_float::half> coordinates;			///< Coordinates of the terrain vertex.
 		std::vector<half_float::half> textureUVs;			///< UV texture coordinates.
 		std::vector<GLuint> index;							///< Index for the terrain triangles.
 
 		Shader             shader;							///< Shader used to render the terrain.
-		Texture           texture;							///< Texture for the terrain.
+		Lighting         lighting;							///< Point light used by the terrain shader.
+		Texture         heightMap;							///< Height map used to displace the terrain.
+		Texture      grassTexture;							///< Albedo used on low terrain areas.
+		Texture       rockTexture;							///< Albedo used on elevated terrain areas.
 
 	private:
 
@@ -71,6 +73,10 @@ namespace finalPractice
 
 		GLint	modelViewMatrixID;							///< Location of the model-view matrix in the shader.
 		GLint  projectionMatrixID;							///< Location of the projection matrix in the shader.
+		GLint      normalMatrixID;							///< Location of the normal matrix in the shader.
+		GLint    heightMapSamplerID;							///< Location of the height-map sampler.
+		GLint grassTextureSamplerID;							///< Location of the grass sampler.
+		GLint  rockTextureSamplerID;							///< Location of the rock sampler.
 
 	public:
 
@@ -82,8 +88,19 @@ namespace finalPractice
 		/// <param name="depth">Depth of the terrain.</param>
 		/// <param name="xSlices">Number of slices in the X direction.</param>
 		/// <param name="zSlices">Number of slices in the Z direction.</param>
-		/// <param name="texturePath">Path to the texture file used for the terrain.</param>
-		Terrain(float width, float depth, unsigned xSlices, unsigned zSlices, const std::string& texturePath);
+		/// <param name="heightMapPath">Path to the height map used for displacement.</param>
+		/// <param name="grassTexturePath">Path to the grass albedo texture.</param>
+		/// <param name="rockTexturePath">Path to the rock albedo texture.</param>
+		Terrain
+		(
+			float width,
+			float depth,
+			unsigned xSlices,
+			unsigned zSlices,
+			const std::string& heightMapPath,
+			const std::string& grassTexturePath,
+			const std::string& rockTexturePath
+		);
 
 		/// <summary>
 		/// Destructor to clean up OpenGL resources used by the terrain.

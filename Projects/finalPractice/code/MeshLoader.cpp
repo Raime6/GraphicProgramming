@@ -21,8 +21,32 @@
 
 namespace finalPractice
 {
-    // Vertex shader code for rendering the mesh with lighting but without textures
+    // Vertex shader for non-textured meshes. Positions and normals are passed in
+    // view space so the Blinn-Phong calculation can be performed per fragment.
     const std::string MeshLoader::vertexShaderCode =
+
+        "#version 330\n"
+        ""
+        "uniform mat4 model_view_matrix;"
+        "uniform mat4 projection_matrix;"
+        "uniform mat3 normal_matrix;"
+        ""
+        "layout (location = 0) in vec3 vertex_coordinates;"
+        "layout (location = 2) in vec3 vertex_normal;"
+        ""
+        "out vec3 view_position;"
+        "out vec3 view_normal;"
+        ""
+        "void main()"
+        "{"
+        "    vec4 position = model_view_matrix * vec4(vertex_coordinates, 1.0);"
+        "    gl_Position = projection_matrix * position;"
+        "    view_position = position.xyz;"
+        "    view_normal = normalize(normal_matrix * vertex_normal);"
+        "}";
+
+    // Blinn-Phong fragment shader for meshes without an albedo texture.
+    const std::string MeshLoader::fragmentShaderCode =
 
         "#version 330\n"
         ""
@@ -35,43 +59,44 @@ namespace finalPractice
         "uniform Light light;"
         "uniform float ambient_intensity;"
         "uniform float diffuse_intensity;"
+        "uniform float specular_intensity;"
+        "uniform float attenuation_constant;"
+        "uniform float attenuation_linear;"
+        "uniform float attenuation_quadratic;"
         ""
         "uniform vec3 material_color;"
-        ""
-        "uniform mat4 model_view_matrix;"
-        "uniform mat4 projection_matrix;"
-        "uniform mat4 normal_matrix;"
-        ""
-        "layout (location = 0) in vec3 vertex_coordinates;"
-        "layout (location = 2) in vec3 vertex_normal;"
-        ""
-        "out vec3 front_color;"
-        ""
-        "void main()"
-        "{"
-        "    vec4 normal   = normal_matrix * vec4(vertex_normal, 0.0);"
-        "    vec4 position = model_view_matrix * vec4(vertex_coordinates, 1.0);"
-        ""
-        "    vec4  light_direction = light.position - position;"
-        "    float light_intensity = diffuse_intensity * max(dot(normalize(normal.xyz), normalize(light_direction.xyz)), 0.0);"
-        ""
-        "    gl_Position = projection_matrix * position;"
-        "    front_color = material_color * ambient_intensity + diffuse_intensity * light_intensity * light.color * material_color;"
-        "}";
-
-    // Fragment shader code to define color without textures
-    const std::string MeshLoader::fragmentShaderCode =
-
-        "#version 330\n"
-        ""
+        "uniform float material_ambient;"
+        "uniform float material_diffuse;"
+        "uniform float material_specular;"
+        "uniform float material_shininess;"
         "uniform float transparency;"
         ""
-        "in  vec3    front_color;"
+        "in vec3 view_position;"
+        "in vec3 view_normal;"
         "out vec4 fragment_color;"
         ""
         "void main()"
         "{"
-        "    fragment_color = vec4(front_color, 1.0) * transparency;"
+        "    vec3 normal = normalize(view_normal);"
+        "    vec3 to_light = light.position.xyz - view_position;"
+        "    float light_distance = length(to_light);"
+        "    vec3 light_direction = normalize(to_light);"
+        "    vec3 view_direction = normalize(-view_position);"
+        "    vec3 halfway_direction = normalize(light_direction + view_direction);"
+        ""
+        "    float diffuse_factor = max(dot(normal, light_direction), 0.0);"
+        "    float specular_factor = 0.0;"
+        "    if (diffuse_factor > 0.0)"
+        "        specular_factor = pow(max(dot(normal, halfway_direction), 0.0), material_shininess);"
+        ""
+        "    float attenuation = 1.0 / (attenuation_constant"
+        "        + attenuation_linear * light_distance"
+        "        + attenuation_quadratic * light_distance * light_distance);"
+        ""
+        "    vec3 ambient = ambient_intensity * material_ambient * material_color;"
+        "    vec3 diffuse = diffuse_intensity * material_diffuse * diffuse_factor * light.color * material_color;"
+        "    vec3 specular = specular_intensity * material_specular * specular_factor * light.color;"
+        "    fragment_color = vec4(ambient + attenuation * (diffuse + specular), transparency);"
         "}";
     
     // Vertex shader code for rendering with lighting and textures
@@ -79,6 +104,32 @@ namespace finalPractice
 
         "#version 330\n"
         ""
+        "uniform mat4 model_view_matrix;"
+        "uniform mat4 projection_matrix;"
+        "uniform mat3 normal_matrix;"
+        ""
+        "layout (location = 0) in vec3 vertex_coordinates;"
+        "layout (location = 1) in vec2 vertex_texture_uv;"
+        "layout (location = 2) in vec3 vertex_normal;"
+        ""
+        "out vec2 texture_uv;"
+        "out vec3 view_position;"
+        "out vec3 view_normal;"
+        ""
+        "void main()"
+        "{"
+        "    vec4 position = model_view_matrix * vec4(vertex_coordinates, 1.0);"
+        "    gl_Position = projection_matrix * position;"
+        "    texture_uv  = vertex_texture_uv;"
+        "    view_position = position.xyz;"
+        "    view_normal = normalize(normal_matrix * vertex_normal);"
+        "}";
+
+    // Blinn-Phong fragment shader using the texture as the material albedo.
+    const std::string MeshLoader::fragmentShaderCodeTexture =
+
+        "#version 330\n"
+        ""
         "struct Light"
         "{"
         "    vec4 position;"
@@ -88,44 +139,47 @@ namespace finalPractice
         "uniform Light light;"
         "uniform float ambient_intensity;"
         "uniform float diffuse_intensity;"
+        "uniform float specular_intensity;"
+        "uniform float attenuation_constant;"
+        "uniform float attenuation_linear;"
+        "uniform float attenuation_quadratic;"
         ""
-        "uniform mat4 model_view_matrix;"
-        "uniform mat4 projection_matrix;"
-        "uniform mat4 normal_matrix;"
+        "uniform sampler2D sampler;"
+        "uniform float material_ambient;"
+        "uniform float material_diffuse;"
+        "uniform float material_specular;"
+        "uniform float material_shininess;"
+        "uniform float transparency;"
         ""
-        "layout (location = 0) in vec3 vertex_coordinates;"
-        "layout (location = 1) in vec2 vertex_texture_uv;"
-        "layout (location = 2) in vec3 vertex_normal;"
-        ""
-        "out vec2 texture_uv;"
-        ""
-        "void main()"
-        "{"
-        "    vec4 normal   = normal_matrix * vec4(vertex_normal, 0.0);"
-        "    vec4 position = model_view_matrix * vec4(vertex_coordinates, 1.0);"
-        ""
-        "    vec4  light_direction = light.position - position;"
-        "    float light_intensity = diffuse_intensity * max(dot(normalize(normal.xyz), normalize(light_direction.xyz)), 0.0);"
-        ""
-        "    gl_Position = projection_matrix * position;"
-        "    texture_uv  = vertex_texture_uv;"
-        "}";
-
-    // Fragment shader code to define color with textures
-    const std::string MeshLoader::fragmentShaderCodeTexture =
-
-        "#version 330\n"
-        ""
-        "uniform sampler2D      sampler;"
-        "uniform float     transparency;"
-        ""
-        "in  vec2     texture_uv;"
+        "in vec2 texture_uv;"
+        "in vec3 view_position;"
+        "in vec3 view_normal;"
         "out vec4 fragment_color;"
         ""
         "void main()"
         "{"
-        "    vec4 texColor = texture(sampler, texture_uv);"
-        "    fragment_color = vec4(texColor.rgb, texColor.a * transparency);"
+        "    vec4 tex_color = texture(sampler, texture_uv);"
+        "    vec3 normal = normalize(view_normal);"
+        "    vec3 to_light = light.position.xyz - view_position;"
+        "    float light_distance = length(to_light);"
+        "    vec3 light_direction = normalize(to_light);"
+        "    vec3 view_direction = normalize(-view_position);"
+        "    vec3 halfway_direction = normalize(light_direction + view_direction);"
+        ""
+        "    float diffuse_factor = max(dot(normal, light_direction), 0.0);"
+        "    float specular_factor = 0.0;"
+        "    if (diffuse_factor > 0.0)"
+        "        specular_factor = pow(max(dot(normal, halfway_direction), 0.0), material_shininess);"
+        ""
+        "    float attenuation = 1.0 / (attenuation_constant"
+        "        + attenuation_linear * light_distance"
+        "        + attenuation_quadratic * light_distance * light_distance);"
+        ""
+        "    vec3 ambient = ambient_intensity * material_ambient * tex_color.rgb;"
+        "    vec3 diffuse = diffuse_intensity * material_diffuse * diffuse_factor * light.color * tex_color.rgb;"
+        "    vec3 specular = specular_intensity * material_specular * specular_factor * light.color;"
+        "    vec3 lit_color = ambient + attenuation * (diffuse + specular);"
+        "    fragment_color = vec4(lit_color, tex_color.a * transparency);"
         "}";
 
 
@@ -147,8 +201,7 @@ namespace finalPractice
         needTexture = false;                                                            // Indicates that the mesh doesn't need a texture
         
         loadMesh(meshFilePath);                                                         // Load the mesh
-
-        lighting.configureLight(shader.getID());                                        // Sets the lighting that will affect the mesh
+        configureMaterial(shader.getID());                                              // Sets its Blinn-Phong material
     }
 
     // MeshLoader constructor for mesh with texture
@@ -172,8 +225,7 @@ namespace finalPractice
         // Sets the texture (albedo) for the mesh
         texture.setID(texture.createTexture2D< Rgba8888 >(texturePath, Texture::TypeTexture2D::ALBEDO));
         assert(texture.isOk());
-
-        lighting.configureLight(shader.getID());                                        // Sets the lighting that will affect the mesh
+        configureMaterial(shader.getID());                                              // Sets its Blinn-Phong material
     }
 
     MeshLoader::~MeshLoader()
@@ -207,10 +259,15 @@ namespace finalPractice
         modelViewMatrix = glm::rotate   (modelViewMatrix, angle, rotateVector);
         modelViewMatrix = glm::scale    (modelViewMatrix,         scaleVector);
 
-        modelViewMatrix = camera.getTransformMatrixInverse() * modelViewMatrix;
+        const glm::mat4 viewMatrix = camera.getTransformMatrixInverse();
+        modelViewMatrix = viewMatrix * modelViewMatrix;
+        const glm::mat3 normalMatrix = glm::transpose(glm::inverse(glm::mat3(modelViewMatrix)));
 
         glUniformMatrix4fv(modelViewMatrixID , 1, GL_FALSE, glm::value_ptr(modelViewMatrix));
         glUniformMatrix4fv(projectionMatrixID, 1, GL_FALSE, glm::value_ptr(camera.getProjectionMatrix()));
+        glUniformMatrix3fv(normalMatrixID, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+
+        lighting.configureLight(shader.getID(), viewMatrix);
 
         if (needTexture)
             texture.bind();
@@ -277,32 +334,32 @@ namespace finalPractice
             glEnableVertexAttribArray(0);
             glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
 
-            // MESH VERTEX COLORS
-            if (not mesh->HasTextureCoords(0)) // ERROR condition
-                std::cerr << "Mesh doesn't have UV coordinates" << std::endl;
-            else if (not needTexture)          // If the mesh don't need texture, sets a color (RGB)
+            // MESH TEXTURE COORDINATES
+            if (needTexture)
             {
-                configureMaterial(shader.getID());
-            }
-            else                               // If the mesh needs a texture
-            {
-                // Sets the mesh color based on its texture coordinates
-                std::vector< glm::vec2 > textureCoords(mesh->mNumVertices);
-
-                for (unsigned i = 0; i < mesh->mNumVertices; ++i)
+                if (not mesh->HasTextureCoords(0))
                 {
-                    textureCoords[i] = glm::vec2
-                    (
-                        mesh->mTextureCoords[0][i].x,
-                        1.f - mesh->mTextureCoords[0][i].y
-                    );
+                    std::cerr << "Mesh doesn't have UV coordinates" << std::endl;
                 }
+                else
+                {
+                    std::vector< glm::vec2 > textureCoords(mesh->mNumVertices);
 
-                glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
-                glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), textureCoords.data(), GL_STATIC_DRAW);
+                    for (unsigned i = 0; i < mesh->mNumVertices; ++i)
+                    {
+                        textureCoords[i] = glm::vec2
+                        (
+                            mesh->mTextureCoords[0][i].x,
+                            1.f - mesh->mTextureCoords[0][i].y
+                        );
+                    }
 
-                glEnableVertexAttribArray(1);
-                glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+                    glBindBuffer(GL_ARRAY_BUFFER, vboIDs[VBO_COLORS]);
+                    glBufferData(GL_ARRAY_BUFFER, textureCoords.size() * sizeof(glm::vec2), textureCoords.data(), GL_STATIC_DRAW);
+
+                    glEnableVertexAttribArray(1);
+                    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 0, 0);
+                }
             }
 
             // MESH VERTEX NORMALS
@@ -348,9 +405,13 @@ namespace finalPractice
 
     void MeshLoader::configureMaterial(GLuint shaderID)
     {
-        GLint materialColor = glGetUniformLocation(shaderID, "material_color");
-        
-        glUniform3f(materialColor, 1.f, 1.f, 1.f); // White color
+        const bool glossy = transparency < 1.f;
+
+        glUniform3f(glGetUniformLocation(shaderID, "material_color"), 1.f, 1.f, 1.f);
+        glUniform1f(glGetUniformLocation(shaderID, "material_ambient"), 1.f);
+        glUniform1f(glGetUniformLocation(shaderID, "material_diffuse"), .9f);
+        glUniform1f(glGetUniformLocation(shaderID, "material_specular"), glossy ? .85f : .35f);
+        glUniform1f(glGetUniformLocation(shaderID, "material_shininess"), glossy ? 96.f : 32.f);
     }
 
 
