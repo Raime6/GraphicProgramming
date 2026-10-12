@@ -1,0 +1,18 @@
+{
+  "$schema": "https://raw.githubusercontent.com/microsoft/vcpkg-tool/main/docs/vcpkg.schema.json",
+  "name": "final-practice",
+  "version-string": "1.0.0",
+  "builtin-baseline": "e456309491fd875487bf02b8a0dca76c1b1b00cc",
+  "dependencies": [
+    "assimp",
+    {
+      "name": "glad",
+      "features": [
+        "gl-api-33"
+      ]
+    },
+    "glm",
+    "sdl2",
+    "soil2"
+  ]
+}

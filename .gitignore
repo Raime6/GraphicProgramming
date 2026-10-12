@@ -35,3 +35,5 @@ Projects/finalPractice/project/visual-studio-2022/.vs/
 Projects/finalPractice/project/visual-studio-2022/*.vcxproj.user
 Projects/finalPractice/project/visual-studio-2022/Final Practice/
 Projects/finalPractice/project/visual-studio-2022/x64/
+Projects/finalPractice/.tools/
+Projects/finalPractice/vcpkg_installed/
